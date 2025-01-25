@@ -216,7 +216,7 @@ teacher module during testing, and the result shows that the agent has learned t
 <p align="center">
   <img src="./docs/GIFs/ani_rlm_eval_10.gif" height="260" alt="ani_rlm_eval_10"/>
   <img src="./docs/GIFs/traj_rlm_eval_10.gif" height="260" alt="traj_rlm_eval_10"/>
-  <br><b>Fig 6. Agent Inference after training 10 episodes by SeC-Learning Machine</b>
+  <br><b>Fig 6. Agent Inference after training 10 episodes by Runtime-LearningMachine</b>
 </p>
 
 ## Misc
