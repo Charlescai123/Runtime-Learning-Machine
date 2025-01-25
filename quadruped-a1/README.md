@@ -1,4 +1,4 @@
-# Quadruped-A1
+# RLM-Quadruped-A1
 
 ![Tensorflow](https://img.shields.io/badge/Tensorflow-2.5.0-orange?logo=tensorflow)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python)
@@ -8,7 +8,7 @@
 ---
 
 This repo proposes the implementation for the paper **Runtime-LearningMachine** to
-provide lifetime safety for real robot during RL-based deployment and real-world learning.
+provide lifetime safety for real quadruped robot A1 during RL-based deployment and real-world learning.
 (Narration: [video1](https://www.youtube.com/shorts/vJKpNzPLPoE)
 and [video2](https://www.youtube.com/watch?v=ZNpJULgLnh0))
 

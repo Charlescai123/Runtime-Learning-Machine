@@ -1,4 +1,4 @@
-# Quadruped-Go2
+# RLM-Quadruped-Go2
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-3.2.6-red?logo=pytorch)
 ![Tensorflow](https://img.shields.io/badge/Tensorflow-2.11.0-orange?logo=tensorflow)

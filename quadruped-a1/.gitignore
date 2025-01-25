@@ -4,3 +4,4 @@ dist/
 saved/
 results/
 *.so
+.egg-info
