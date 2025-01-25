@@ -2,7 +2,7 @@
 
 ---
 
-This repository contains the experiments of the Runtime-LearningMachine, where the framework is validated upon three different
+This repository contains the experiments of the **Runtime Learning Machine**, where the framework is validated upon three different
 physical systems in different environments. Respectively, they're:
 * [Cart-Pole](./cartpole/README.md) in Openai Gym
 * [Quadruped-A1](./quadruped-a1/README.md) in Real world environment
@@ -19,3 +19,7 @@ physical systems in different environments. Respectively, they're:
 ---
 
 # Quadruped-Go2
+
+--
+
+# Citation
