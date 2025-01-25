@@ -9,7 +9,7 @@
 ---
 
 This repository simulates the cart-pole system in Openai-Gym to validate the feasibility of the
-*Runtime-LearningMachine* for the
+**Runtime Learning Machine** for the
 safety-critical applications. We use MATLAB to calculate solution of LMIs.
 
 ## Table of Content
@@ -159,7 +159,7 @@ Continual learning without safety guarantee:
 
 #### 2. Runtime Learning Machine for safety assurance
 
-Runtime-LearningMachine enables continual learning in the new environment, but HA-Teacher only guarantees safety (The
+Runtime-Learning-Machine enables continual learning in the new environment, but HA-Teacher only guarantees safety (The
 HP-Student doesn't learn from HA-Teacher):
 
    ```bash
@@ -168,14 +168,14 @@ HP-Student doesn't learn from HA-Teacher):
 
 #### 3. Runtime Learning Machine for safe continual learning
 
-Runtime-LearningMachine enables continual learning in the new environment, the HA-Teacher guarantees safety and
+Runtime-Learning-Machine enables continual learning in the new environment, the HA-Teacher guarantees safety and
 HP-Student learns from HA-Teacher:
 
    ```bash
    bash scripts/train/rlm_safe_learn.sh 
   ```
 
-In Runtime-LearningMachine, the teacher will always provide safety guarantee for the student (agent) during continual
+In Runtime-Learning-Machine, the teacher will always provide safety guarantee for the student (agent) during continual
 learning:
 <p align="center">
  <img src="./docs/GIFs/ani_rlm_train.gif" height="260" alt="ani_rlm_train"/> 
@@ -188,15 +188,15 @@ constraints*), and the ellipse represents the `Safety Envelope`:
 <p align="center">
  <img src="./docs/phase_unsafe_learn.png" height="290" alt="phase_unsafe_learn"/>
  <img src="./docs/phase_rlm.png" height="290" alt="phase_rlm"/> 
- <br><b>Fig 4. Phase Behavior of Unsafe Learn (left) and Runtime-LearningMachine (right)</b>
+ <br><b>Fig 4. Phase Behavior of Unsafe Learn (left) and Runtime Learning Machine (right)</b>
 </p>
 
 ### Results
 
 ---
 
-To show the agent's learning performance with Runtime-LearningMachine, we select the same (unsafe) initial condition and
-continually train for 10 episodes, either with or without Runtime-LearningMachine.
+To show the agent's learning performance with **Runtime Learning Machine**, we select the same (unsafe) initial condition and
+continually train for 10 episodes, either with or without **Runtime Learning Machine**.
 
 - #### Unsafe Continual Learning
 
@@ -210,13 +210,13 @@ a safe policy.
 
 - #### Runtime Learning Machine
 
-By Runtime-LearningMachine, the cartpole would always keep in a safe condition. To validate the training performance, we disable the
+By Runtime-Learning-Machine, the cartpole would always keep in a safe condition. To validate the training performance, we disable the
 teacher module during testing, and the result shows that the agent has learned the safe behavior from teacher:
 
 <p align="center">
   <img src="./docs/GIFs/ani_rlm_eval_10.gif" height="260" alt="ani_rlm_eval_10"/>
   <img src="./docs/GIFs/traj_rlm_eval_10.gif" height="260" alt="traj_rlm_eval_10"/>
-  <br><b>Fig 6. Agent Inference after training 10 episodes by Runtime-LearningMachine</b>
+  <br><b>Fig 6. Agent Inference after training 10 episodes by Runtime Learning Machine</b>
 </p>
 
 ## Misc

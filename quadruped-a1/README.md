@@ -7,7 +7,7 @@
 
 ---
 
-This repo proposes the implementation for the paper **Runtime-LearningMachine** to
+This repo proposes the implementation for the paper **Runtime Learning Machine** to
 provide lifetime safety for real quadruped robot A1 during RL-based deployment and real-world learning.
 (Narration: [video1](https://www.youtube.com/shorts/vJKpNzPLPoE)
 and [video2](https://www.youtube.com/watch?v=ZNpJULgLnh0))

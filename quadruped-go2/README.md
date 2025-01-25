@@ -8,7 +8,7 @@
 
 ---
 
-This repo deploys the **Runtime-LearningMachine** on Quadruped-Go2 robot to within a sim2sim environment (Pybullet to
+This repo deploys the **Runtime Learning Machine** on Quadruped-Go2 robot to within a sim2sim environment (Pybullet to
 IsaacGym)
 
 ## User Guide
