@@ -10,7 +10,7 @@
 
 This repository simulates the cart-pole system in Openai-Gym to validate the feasibility of the
 *Runtime-LearningMachine* for the
-safety-critical applications. The solution of LMIs is given by MATLAB.
+safety-critical applications. We use MATLAB to calculate solution of LMIs.
 
 ## Table of Content
 
@@ -40,11 +40,11 @@ formatted as follows:
 │      ├── test                           <- For testing
 │      └── train                          <- For training
 │           ├── pretrain.sh                   <- Pretain a policy using Phy-DRL
-│           ├── seclm_safe_learn.sh           <- Continual learn with seclm
-│           ├── seclm_safe_only.sh            <- Continual learn with seclm (only use seclm for safety)
-│           └── unsafe_continual_learn.sh     <- Continual learn without seclm (no safety guarantee)
+│           ├── rlm_safe_learn.sh             <- Continual learn with RLM
+│           ├── rlm_safe_only.sh              <- Continual learn with RLM (only use RLM for safety)
+│           └── unsafe_continual_learn.sh     <- Continual learn (no safety guarantee)
 ├── src                              
-│    ├── envs                             <- Environment of real plant (cartpole)
+│    ├── envs                             <- Environment of the physical plant (cartpole)
 │    ├── ha_teacher                  
 │           ├── matlab                    <- m files for solving LMIs
 │           ├── ha_teacher.py             <- High Assurance Teacher
@@ -175,27 +175,28 @@ HP-Student learns from HA-Teacher:
    bash scripts/train/rlm_safe_learn.sh 
   ```
 
-In SeCLM, the teacher will always provide safety guarantee for the student (agent) during continual learning:
+In Runtime-LearningMachine, the teacher will always provide safety guarantee for the student (agent) during continual
+learning:
 <p align="center">
- <img src="./docs/GIFs/ani_seclm_train.gif" height="260" alt="ani_seclm_train"/> 
- <img src="./docs/GIFs/traj_seclm_train.gif" height="260" alt="traj_seclm_train"/> 
+ <img src="./docs/GIFs/ani_rlm_train.gif" height="260" alt="ani_rlm_train"/> 
+ <img src="./docs/GIFs/traj_rlm_train.gif" height="260" alt="traj_rlm_train"/> 
  <br><b>Fig 3. Teacher Guarantees Safety During Agent Learning (and Inference)</b>
 </p>
 
 Below are the two different system phase portraits during training. The polygon represents the `Safety Set` (*hard
-constraints*), and the ellipse represents the `Safety Envelope` (*soft constraints*):
+constraints*), and the ellipse represents the `Safety Envelope`:
 <p align="center">
  <img src="./docs/phase_unsafe_learn.png" height="290" alt="phase_unsafe_learn"/>
- <img src="./docs/phase_seclm.png" height="290" alt="phase_seclm"/> 
- <br><b>Fig 4. Phase Behavior of Unsafe Learn (left) and SeCLM (right)</b>
+ <img src="./docs/phase_rlm.png" height="290" alt="phase_rlm"/> 
+ <br><b>Fig 4. Phase Behavior of Unsafe Learn (left) and Runtime-LearningMachine (right)</b>
 </p>
 
 ### Results
 
 ---
 
-To show the agent's learning performance with SeCLM, we select the same (unsafe) initial condition and continually train
-for 10 episodes, either with or without SeCLM.
+To show the agent's learning performance with Runtime-LearningMachine, we select the same (unsafe) initial condition and
+continually train for 10 episodes, either with or without Runtime-LearningMachine.
 
 - #### Unsafe Continual Learning
 
@@ -209,12 +210,12 @@ a safe policy.
 
 - #### Runtime Learning Machine
 
-By SeCLM, the cartpole would always keep in a safe condition. To validate the training performance, we disable the
+By Runtime-LearningMachine, the cartpole would always keep in a safe condition. To validate the training performance, we disable the
 teacher module during testing, and the result shows that the agent has learned the safe behavior from teacher:
 
 <p align="center">
-  <img src="./docs/GIFs/ani_seclm_eval_10.gif" height="260" alt="ani_seclm_eval_10"/>
-  <img src="./docs/GIFs/traj_seclm_eval_10.gif" height="260" alt="traj_seclm_eval_10"/>
+  <img src="./docs/GIFs/ani_rlm_eval_10.gif" height="260" alt="ani_rlm_eval_10"/>
+  <img src="./docs/GIFs/traj_rlm_eval_10.gif" height="260" alt="traj_rlm_eval_10"/>
   <br><b>Fig 6. Agent Inference after training 10 episodes by SeC-Learning Machine</b>
 </p>
 
