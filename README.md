@@ -1,4 +1,4 @@
-# Runtime-LearningMachine
+# Runtime-Learning-Machine
 
 ---
 
@@ -20,6 +20,6 @@ physical systems in different environments. Respectively, they're:
 
 # Quadruped-Go2
 
---
+---
 
 # Citation
