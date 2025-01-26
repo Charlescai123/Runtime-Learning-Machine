@@ -20,8 +20,8 @@ Data-driven methods are prone to the unknown unknowns in the environment which b
 safety-critical systems. Runtime Learning Machine is designed to address related concerns:
 
 <p align="center">
- <img src="./cartpole/docs/rlm.gif" height="280" alt="ani_pretrain"/>
- <img src="./cartpole/docs/no-rlm.gif" height="280" alt="traj_pretrain"/>
+ <img src="./cartpole/docs/rlm.gif" height="270" alt="ani_pretrain"/>
+ <img src="./cartpole/docs/no-rlm.gif" height="270" alt="traj_pretrain"/>
  <br><b>Fig. In unknown environment, DRL agent violates safety constraint (Left) while Runtime Learning Machine enables 
 agent to safely learn (right)</b>
 </p>
