@@ -138,7 +138,7 @@ The cartpole system will safely converge to the set point using control action f
 
 ---
 
-**`Safety-critical system:`** We model the Cartpole as a safety-critical system by defining the `Safety Set` (Group of
+**`Safety-critical System:`** We model the Cartpole as a safety-critical system by defining the `Safety Set` (Group of
 all
 admissible states). Any safety violation will be highlighted in red during the animation. Since data-driven methods are
 inherently sensitive to environmental discrepancies, they cannot guarantee safety in the presence of unknown factors.
