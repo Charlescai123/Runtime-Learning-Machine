@@ -1,15 +1,12 @@
 # @package _global_
 
 ha_teacher:
-  chi: 0.25
-  eta: 1.2
+  chi: 0.3
   tau: 10
-  beta: 0.9
-  kappa: 0.02
-  epsilon: 0.6
+  epsilon: 1
 
-  teacher_learn: true
-  teacher_enable: true
+  teacher_enable: true    # enable HA-Teacher or not
+  teacher_correct: true    # whether HA-Teacher's actions are used for correcting HP-Student
 
   matlab_engine:
     stdout: false

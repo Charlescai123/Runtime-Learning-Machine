@@ -8,7 +8,7 @@ agents:
     noise_factor: 1
     noise_half_decay_time: 1e6
     bound: [ -1, 1 ]
-    magnitude: 15
+    magnitude: 30
 
   # Actor-Critic
   initial_loss: 100
@@ -33,6 +33,10 @@ agents:
     batch_size: 512
     buffer_size: 1e6
     experience_prefill_size: 512
+
+  # Unknown distribution
+  unknown_distribution:
+    apply: false
 
   # Checkpoint
   checkpoint: ${general.checkpoint}

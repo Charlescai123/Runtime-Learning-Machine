@@ -1,9 +1,8 @@
-function [F_hat, tmin] = patch_lmi(Ak, Bk)
+function [F_hat, tmin] = patch_lmi(chi, Ak, Bk)
 %%%%%%%%%%%%%%%%%%%%%%  DOC HELP  %%%%%%%%%%%%%%%%%%%%%%
 %% Inputs
 %
-%      Ac :  A(s) in continuous form      -- 4x4
-%      Bc :  B(s) in continuous form      -- 4x1
+%      chi:  Hyperparameter for patch
 %      Ak :  A(s) in discrete form        -- 4x4
 %      Bk :  B(s) in discrete form        -- 4x1
 %
@@ -12,7 +11,7 @@ function [F_hat, tmin] = patch_lmi(Ak, Bk)
 %    tmin :  Feasibility of LMI solution  -- 1x4
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-SP = [54.1134178606985,26.2600592637275,61.7975412804215,12.9959418258126;
+P = [54.1134178606985,26.2600592637275,61.7975412804215,12.9959418258126;
       26.2600592637275,14.3613985149923,34.6710819094179,7.27321583818861;
       61.7975412804215,34.6710819094179,88.7394386456256,18.0856894519164;
       12.9959418258126,7.27321583818861,18.0856894519164,3.83961074325448;];
@@ -24,7 +23,6 @@ C = 1/50;
 n = 4;
 alpha = 0.999;
 kappa = 0.01;
-chi = 0.3;
 gamma1 = 1;
 gamma2 = 0.1;
 
@@ -42,7 +40,7 @@ lmiterm([-1 2 2 Q],1,1/(1+gamma2));
 
 lmiterm([2 1 1 mu], 1, -1);
 
-lmiterm([3 1 1 mu], 1,inv(SP));
+lmiterm([3 1 1 mu], 1,inv(P));
 lmiterm([3 1 1 Q], 1,-1);
 
 lmiterm([4 1 1 0], (1-(2*chi)+(chi/gamma1))*1);

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from numpy.linalg import inv
 from numpy import linalg as LA
-from cartpole.src.utils.utils import check_dir, ActionMode, PlotMode
+from src.utils.utils import check_dir, ActionMode, PlotMode
 from matplotlib.collections import LineCollection
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

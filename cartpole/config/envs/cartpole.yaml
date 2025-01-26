@@ -3,13 +3,13 @@
 cartpole:
   # State constraint
   safety_set:
-    x: [-0.9, 0.9]
-    x_dot: [-15, 15]
-    theta: [-0.8, 0.8]
-    theta_dot: [-15, 15]
+    x: [ -1, 1 ]
+    x_dot: [ -4, 4 ]
+    theta: [ -0.8, 0.8 ]
+    theta_dot: [ -4, 4 ]
 
   # Action constraint
-  force_bound: [-30, 30]
+  force_bound: [ -50, 50 ]
 
   # Cart-pole (Physical model parameters)
   mass_cart: 0.94
@@ -17,64 +17,100 @@ cartpole:
   length_pole: 0.64
   friction_cart: 18
   friction_pole: 0.0031
+#  friction_pole: 0.06
   gravity: 9.8    # gravitational acceleration
   frequency: 30   # Runtime frequency
   with_friction: true
   kinematics_integrator: "euler"
   terminate_on_failure: true
 
-  # Cart-pole (Control settings)
   initial_condition: [
-    0.41401618443072785,
-    -0.8718992596679117,
-    -0.5441679004386896,
-    3.9533094574574275,
+    -0.3561692115937687,
+    0.485707845883927,
+    -0.0034108601854805354,
+    0.15013432339178134,
     false
   ]
+
   set_point: [
     0.0,
     0.0,
     0.0,
     0.0
   ]
+  # Random Reset
   random_reset:
-    seed: 0   # Random seed
+    seed: 1
+    threshold: 1
     train: true
     eval: true
 
-  # Add random noise to actuator/friction
-  random_noise:
-    seed: 0   # Random seed
+  # Domain Randomization
+  domain_random:
+    seed: 0
 
-    # Actuator noise
+    # mass of cart
+    mass_cart:
+      apply: false
+      distribution:
+        type: "gaussian"
+        mean: 0
+        stddev: 2
+
+    # mass of pole
+    mass_pole:
+      apply: false
+      distribution:
+        type: "gaussian"
+        mean: 0
+        stddev: 2
+
+    # friction of cart
+    friction_cart:
+      apply: false
+      distribution:
+#        type: "uniform"
+#        lb: -2
+#        ub: 2
+        type: "gaussian"
+        mean: 0
+        stddev: 1
+
+    # friction of pole
+    friction_pole:
+      apply: false
+      distribution:
+        type: "gaussian"
+        mean: 0
+        stddev: 2
+
+    # actuator
     actuator:
       apply: false
-      type: "gaussian"
-      mean: 0
-      stddev: 2
-
-    # Friction noise
-    friction:
-      # cart friction
-      cart:
-        apply: false
+      distribution:
         type: "gaussian"
         mean: 0
         stddev: 2
 
-      # pole friction
-      pole:
-        apply: false
+  # Inject disturbance to actuator
+  inject_disturbance:
+    seed: 0
+    actuator:
+      apply: false
+      distribution:
         type: "gaussian"
         mean: 0
         stddev: 2
+#        type: "constant"
+#        value: 5
 
   # RL Reward from Envs
   reward:
+    teacher_discount: 0.0
     action_penalty: 0.0
     crash_penalty: 0.0
-    high_performance_reward_factor: 0
-    lyapunov_form: 'Phy-DRL'      # Lyapunov Reward Form of Phy-DRL or UCB
+    high_performance_reward_factor: 0.0
+    lyapunov_form: 'UCB'      # Lyapunov Reward Form of Phy-DRL or UCB
     lyapunov_reward_factor: 1
 
 

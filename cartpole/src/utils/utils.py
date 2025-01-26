@@ -61,7 +61,6 @@ def energy_value(state: np.ndarray, p_mat: np.ndarray) -> int:
     Get system energy value represented by s^T @ P @ s
     """
     energy = state.transpose() @ p_mat @ state
-    # print(f"energy is: {energy}")
     return energy
 
 

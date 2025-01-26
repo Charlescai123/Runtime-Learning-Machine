@@ -163,7 +163,7 @@ Runtime-Learning-Machine enables continual learning in the new environment, but 
 HP-Student doesn't learn from HA-Teacher):
 
    ```bash
-   bash scripts/train/rlm_safe_only.sh 
+   bash scripts/train/rlm_assurance.sh 
   ```
 
 #### 3. Runtime Learning Machine for safe continual learning

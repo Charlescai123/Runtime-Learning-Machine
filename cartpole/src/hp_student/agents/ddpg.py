@@ -3,9 +3,9 @@ import math
 import numpy as np
 import tensorflow as tf
 from omegaconf import DictConfig
-from cartpole.src.hp_student.networks.mlp import MLPModel
-from cartpole.src.hp_student.networks.taylor import TaylorModel
-from cartpole.src.hp_student.utils.utils import OrnsteinUhlenbeckActionNoise
+from src.hp_student.networks.mlp import MLPModel
+from src.hp_student.networks.taylor import TaylorModel
+from src.hp_student.utils.utils import OrnsteinUhlenbeckActionNoise
 
 
 class DDPGAgent:
@@ -134,7 +134,6 @@ class DDPGAgent:
         return action_saturated
 
     def get_exploitation_action(self, observations):
-
         observations_tensor = tf.expand_dims(observations, 0)
         action_exploitation = self.actor(observations_tensor)
         return tf.squeeze(action_exploitation).numpy()

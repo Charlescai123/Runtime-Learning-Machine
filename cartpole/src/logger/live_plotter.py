@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.collections import LineCollection
 
-from cartpole.src.logger.fig_plotter import FigPlotter
-from cartpole.src.utils.utils import ActionMode
+from src.logger.fig_plotter import FigPlotter
+from src.utils.utils import ActionMode
 
 matplotlib.use('TkAgg')  # Use TkAgg as the matplotlib backend
 

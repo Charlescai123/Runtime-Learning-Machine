@@ -4,14 +4,15 @@ import math
 import copy
 import pyglet
 import numpy as np
+
 from numpy.linalg import inv
 from gym.utils import seeding
 from numpy import linalg as LA
 from omegaconf import DictConfig
 import matplotlib.pyplot as plt
 
-from cartpole.src.physical_design import MATRIX_P, MATRIX_A, MATRIX_B, F
-from cartpole.src.utils.utils import energy_value, logger
+from src.physical_design import MATRIX_P, MATRIX_A, MATRIX_B, F
+from src.utils.utils import energy_value, logger
 
 
 class Cartpole(gym.Env):
@@ -70,6 +71,8 @@ class Cartpole(gym.Env):
         return: a list of state
         """
         x, x_dot, theta, theta_dot, _ = self.state
+
+        # Truncate the force applied to the cartpole system
         force = np.clip(action, a_min=self._f_min, a_max=self._f_max)
 
         # Actual force applied to plant after random noise
@@ -82,7 +85,7 @@ class Cartpole(gym.Env):
         cos_th = math.cos(theta)
         sin_th = math.sin(theta)
 
-        # kinematics of the inverted pendulum
+        # kinematics of the inverted pendulum in simu
         if self.with_friction:
             """ with friction"""
             temp \
@@ -364,7 +367,7 @@ class Cartpole(gym.Env):
         return error
 
     def get_pP_and_vP(self):
-        # P = MATRIX_P
+        P = MATRIX_P
         pP = np.zeros((2, 2))
         vP = np.zeros((2, 2))
 
@@ -425,9 +428,9 @@ class Cartpole(gym.Env):
 
         action_penalty = -1 * self.params.reward.action_penalty * action * action
 
-        r = distance_reward + lyapunov_reward + action_penalty
+        rwd = distance_reward + lyapunov_reward + action_penalty
 
-        return r, distance_score
+        return rwd, distance_score
 
     def get_distance_score(self, observations, set_point):
         distance_score_factor = 5  # to adjust the exponential gradients
@@ -470,12 +473,7 @@ class Cartpole(gym.Env):
             b = 11 * np.random.random(1)[0]  # [0, 11]
 
         uu1 = -rng.beta(a, b) + rng.beta(a, b)
-        # uu2 = -rng.beta(a, b) + rng.beta(a, b)
-        # if uu1 > 0:
-        #     uu1 = -uu1
-        # uu1 *= 2.75  # [-2, 2]
         uu1 *= 2.5  # [-0.5, 0.5]
-        # uu2 *= 2.0  # [-2, 2]
 
         return uu1
 
@@ -492,53 +490,6 @@ def observations2state(observations, failed):
     return state
 
 
-def get_init_condition(n_points_per_dim=20):
-    eigen_values, eigen_vectors = np.linalg.eig(MATRIX_P)  # get eigen value and eigen vector
-
-    Q = eigen_vectors
-
-    initial_condition_list = []
-
-    for i in range(n_points_per_dim):
-        angle_1 = i * math.pi / n_points_per_dim
-        y0 = math.sqrt(1 / eigen_values[0]) * math.cos(angle_1)
-        vector_in_3d = math.sin(angle_1)
-
-        if vector_in_3d == 0:
-            y1 = 0
-            y2 = 0
-            y3 = 0
-            s = Q @ np.array([y0, y1, y2, y3]).transpose()
-            # print(s.transpose() @ P_matrix_4 @ s)
-            initial_condition_list.append([s[0], s[1], s[2], s[3], False])
-            continue
-
-        for k in range(n_points_per_dim):
-            angle_2 = k * math.pi / n_points_per_dim
-            y1 = vector_in_3d * math.sqrt(1 / eigen_values[1]) * math.cos(angle_2)
-            vector_in_2d = vector_in_3d * math.sin(angle_2)
-
-            if vector_in_2d == 0:
-                y2 = 0
-                y3 = 0
-                s = Q @ np.array([y0, y1, y2, y3]).transpose()
-                # print(s.transpose() @ P_matrix_4 @ s)
-                initial_condition_list.append([s[0], s[1], s[2], s[3], False])
-                continue
-
-            for j in range(n_points_per_dim):
-                angle_3 = j * math.pi / n_points_per_dim
-                y2 = vector_in_2d * math.sqrt(1 / eigen_values[2]) * math.cos(angle_3)
-                y3 = vector_in_2d * math.sqrt(1 / eigen_values[3]) * math.sin(angle_3)
-                s = Q @ np.array([y0, y1, y2, y3]).transpose()
-                # print(s.transpose() @ MATRIX_P @ s)
-                initial_condition_list.append([s[0], s[1], s[2], s[3], False])
-
-    print(f"Generating {len(initial_condition_list)} conditions for training ...")
-
-    return initial_condition_list
-
-
 if __name__ == "__main__":
     screen_width = 600
     screen_height = 400
@@ -552,6 +503,7 @@ if __name__ == "__main__":
     target_width = 25
     target_height = 25
 
+    from gym.envs.classic_control import rendering
     viewer = rendering.Viewer(screen_width, screen_height)
     target_trans = rendering.Transform()
     # target = rendering.Image('./docs/target.svg', width=target_width, height=target_height)

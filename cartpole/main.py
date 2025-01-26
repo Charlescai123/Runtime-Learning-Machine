@@ -63,10 +63,10 @@ def main(cfg: DictConfig):
         gpu_id = str(cfg.general.gpu_id)
         os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id
         physical_devices = tf.config.list_physical_devices('GPU')
-        # try:
-        #     tf.config.experimental.set_memory_growth(physical_devices[0], True)
-        # except:
-        #     exit("GPU allocated failed")
+        try:
+            tf.config.experimental.set_memory_growth(physical_devices[0], True)
+        except:
+            exit("GPU allocated failed")
 
     # Train or Test
     if cfg.general.mode == 'train':

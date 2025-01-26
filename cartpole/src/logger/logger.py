@@ -6,10 +6,10 @@ import tensorflow as tf
 from collections import deque
 from omegaconf import DictConfig
 
-from cartpole.src.physical_design import MATRIX_P
-from cartpole.src.logger.fig_plotter import FigPlotter
-from cartpole.src.logger.live_plotter import LivePlotter
-from cartpole.src.utils.utils import check_dir, is_dir_empty, ActionMode
+from src.physical_design import MATRIX_P
+from src.logger.fig_plotter import FigPlotter
+from src.logger.live_plotter import LivePlotter
+from src.utils.utils import check_dir, is_dir_empty, ActionMode
 
 class Logger:
     def __init__(self, logger_cfg: DictConfig):

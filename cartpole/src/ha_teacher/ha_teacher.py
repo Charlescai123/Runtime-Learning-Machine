@@ -23,14 +23,10 @@ class HATeacher:
 
         # Teacher Configuration
         self.chi = teacher_cfg.chi
-        self.eta = teacher_cfg.eta
-        self.beta = teacher_cfg.beta
-        self.kappa = teacher_cfg.kappa
         self.epsilon = teacher_cfg.epsilon
         self.max_dwell_steps = teacher_cfg.tau
 
         self.teacher_enable = teacher_cfg.teacher_enable
-        self.teacher_learn = teacher_cfg.teacher_learn
         self.teacher_correct = teacher_cfg.teacher_correct
 
         # Cart-Pole Configuration
@@ -43,23 +39,18 @@ class HATeacher:
         # Real-time status
         self._plant_state = None
         self._teacher_activate = False
-        self._patch_center = np.array([0, 0, 0, 0])
-        # self._patch_gain = F  # F_hat
+        self._patch_center = np.array([0., 0., 0., 0.])
         self._patch_gain = F_Simplex  # F_simplex
         self._dwell_step = 0  # Dwell step
         self._activation_cnt = 0
-        # self._last_action_mode = ActionMode.STUDENT  # Last action mode
 
     def reset(self, state):
-        # energy = energy_value(state=state, p_mat=MATRIX_P)
         self._plant_state = state
         self._teacher_activate = False
-        self._patch_center = np.array([0, 0, 0, 0])
+        self._patch_center = np.array([0., 0., 0., 0.])
         self._patch_gain = F_Simplex  # F_simplex
         self._dwell_step = 0
-        self._activation_cnt = 0
-        # self._dwell_step = 0 if energy >= self.epsilon else self.max_dwell_steps
-        # self._last_action_mode = ActionMode.STUDENT  # Last action mode
+        self._activation_cnt = 0  # Count of teacher activate times
 
     def update(self, state: np.ndarray):
         """
@@ -69,53 +60,30 @@ class HATeacher:
         self._plant_state = state
         energy = energy_value(state=state, p_mat=MATRIX_P)
 
-        # HA-Teacher activated
+        # When HA-Teacher activated
         if self._teacher_activate:
+
+            # Deactivate it after dwell time
             if self._dwell_step >= self.max_dwell_steps:
                 logger.debug(f"Reaching maximum dwell steps, deactivate HA-Teacher")
                 self._teacher_activate = False
-                # self._dwell_step = 0
 
-        # HA-Teacher deactivated
+        # When HA-Teacher deactivated
         else:
             # Outside envelope boundary
             if energy >= self.epsilon:
                 self._dwell_step = 0
                 self._teacher_activate = True  # Activate teacher
-                self._activation_cnt += 1   # Activation count plus 1
+                self._activation_cnt += 1  # Activation count plus 1
                 self._patch_center = self._plant_state * self.chi  # Update patch center
                 logger.debug(f"Activate HA-Teacher and updated patch center is: {self._patch_center}")
-
-    # def update(self, state: np.ndarray):
-    #     """
-    #     Update real-time plant state and corresponding patch center if state is unsafe
-    #     """
-    #
-    #     self._plant_state = state
-    #     energy = energy_value(state=state, p_mat=MATRIX_P)
-    #
-    #     # Restore patch flag
-    #     if energy < self.epsilon:
-    #         self._center_update = True
-    #
-    #     # state unsafe (outside safety envelope)
-    #     else:
-    #         # Reset dwell steps
-    #         if self._dwell_step > 0:
-    #             logger.debug(f"Reset dwell_steps: {self._dwell_step}")
-    #             self._dwell_step = 0
-    #
-    #         # Update patch center with current plant state
-    #         if self._center_update is True:
-    #             self._patch_center = self._plant_state * self.chi
-    #             self._center_update = False
 
     def get_action(self):
         """
         Get updated teacher action during real-time
         """
 
-        # If teacher deactivated
+        # If teacher is disabled or deactivated
         if self.teacher_enable is False or self._teacher_activate is False:
             return None, False
 
@@ -123,10 +91,7 @@ class HATeacher:
         Ak, Bk = get_discrete_Ad_Bd(Ac=As, Bc=Bs, T=1 / self.freq)
 
         # Call Matlab Engine for patch gain (F_hat)
-        F_hat, t_min = self.mat_engine.system_patch(As=As, Bs=Bs, Ak=Ak, Bk=Bk,
-                                                    eta=self.eta, beta=self.beta, kappa=self.kappa)
-        # print(f"dwell {self._dwell_step} energy by hac: {energy_value(self._plant_state, P_hat)}")
-        # F_hat = F_Simplex
+        F_hat, t_min = self.mat_engine.system_patch(Ak=Ak, Bk=Bk, chi=self.chi)
 
         if t_min > 0:
             print(f"LMI has no solution, use last updated patch")
@@ -136,41 +101,27 @@ class HATeacher:
         # State error form
         error_state = self._plant_state - self._patch_center
 
-        redundancy_term = self._patch_center - Ak @ self._patch_center
-        v1 = np.squeeze(redundancy_term[1] / Bk[1])
-        v2 = np.squeeze(redundancy_term[3] / Bk[3])
+        # redundancy_term = self._patch_center - Ak @ self._patch_center
+        # v1 = np.squeeze(redundancy_term[1] / Bk[1])
+        # v2 = np.squeeze(redundancy_term[3] / Bk[3])
         # v = np.linalg.pinv(self.Bk).squeeze() @ (np.eye(4) - self.Ak) @ sbar_star
-        v = (v1 + v2) / 2
+        # v = (v1 + v2) / 2
 
-        # logger.debug(f"v1: {v1}")
-        # logger.debug(f"v2: {v2}")
-        # logger.debug(f"v is: {v}")
-        # logger.debug(f"redundancy term: {redundancy_term}")
-
-        teacher_action = self._patch_gain @ error_state + v
-        # teacher_action = self._patch_gain @ error_state
+        # Action from HA-Teacher
+        teacher_action = self._patch_gain @ error_state
 
         logger.debug(f"patch gain: {self._patch_gain}")
         logger.debug(f"self._plant_state: {self._plant_state}")
         logger.debug(f"self._patch_center: {self._patch_center}")
         logger.debug(f"Generated teacher action: {teacher_action}")
 
-        # energy = energy_value(state=self._plant_state, p_mat=MATRIX_P)
-        # print(f"energy: {energy}")
-        # print(f"self._dwell_step: {self._dwell_step}")
-        # print(f"self.max_dwell_steps: {self.max_dwell_steps}")
         assert self._dwell_step <= self.max_dwell_steps
 
+        # Increment one dwell step
         self._dwell_step += 1
         logger.debug(f"HA-Teacher runs for dwell time: {self._dwell_step}/{self.max_dwell_steps}")
-        return teacher_action, True
 
-        # if energy < self.epsilon and self._dwell_step < self.max_dwell_steps:
-        #     self._dwell_step += 1
-        #     logger.debug(f"HA-Teacher runs for dwell time: {self._dwell_step}/{self.max_dwell_steps}")
-        #     return teacher_action, True
-        # else:
-        #     return teacher_action, False
+        return teacher_action, True
 
     def get_As_Bs_by_state(self, state: np.ndarray):
         """

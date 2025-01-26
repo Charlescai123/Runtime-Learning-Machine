@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Test
-ID="RLM-Safe-Learn"
+ID="RLM-Assurance"
 MODE='test'
-CHECKPOINT="results/models/RLM-Safe-Learn"
+CHECKPOINT="results/models/RLM-Assurance"
 TEACHER_ENABLE=false
 TEACHER_CORRECT=false
 WITH_FRICTION=true
