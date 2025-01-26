@@ -140,9 +140,8 @@ class Trainer:
                     else:
                         critic_loss = self._initial_loss
                     critic_loss_list.append(critic_loss)
-                    
-                reward_list.append(r)
-                distance_score_list.append(distance_score)
+                    reward_list.append(r)
+                    distance_score_list.append(distance_score)
 
                 global_steps += 1
                 ep_steps += 1

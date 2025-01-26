@@ -225,9 +225,9 @@ a safe policy.
 
 - #### Runtime Learning Machine
 
-By **Runtime Learning Machine**, the cartpole would always keep in a safe condition. To validate the training performance,
-we disable the
-teacher module during testing, and the result shows that the HP-Student has exhibited stable behavior:
+By **Runtime Learning Machine**, the cartpole would always keep in a safe condition. To validate the training
+performance,
+we disable the HA-Teacher during inference, and the result shows that the HP-Student has exhibited stable behavior:
 
 <p align="center">
   <img src="./docs/GIFs/ani_rlm_eval_10.gif" height="260" alt="ani_rlm_eval_10"/>
@@ -247,3 +247,5 @@ teacher module during testing, and the result shows that the HP-Student has exhi
 - In case you get issues during live plot, check the suitable
   backend [libraries](https://matplotlib.org/stable/users/explain/figure/backends.html) to use for matplotlib and set it
   by *matplotlib.use(xxx)* in `src/logger/live_plotter.py`
+- Enabling HA-Teacher action **correcting** during runtime learning will result in faster convergence compared with
+  purely safety assurance (No correction)
