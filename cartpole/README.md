@@ -41,7 +41,7 @@ formatted as follows:
 │      └── train                          <- For training
 │           ├── pretrain.sh                   <- Pretain a policy using Phy-DRL
 │           ├── rlm_safe_learn.sh             <- Continual learn with RLM
-│           ├── rlm_safe_only.sh              <- Continual learn with RLM (only use RLM for safety)
+│           ├── rlm_assurance.sh              <- Continual learn with RLM (only with safety assurance)
 │           └── unsafe_continual_learn.sh     <- Continual learn (no safety guarantee)
 ├── src                              
 │    ├── envs                             <- Environment of the physical plant (cartpole)
@@ -108,7 +108,7 @@ version is compatible with the installed matlab version. After that, build MATLA
 
 ---
 
-Use Phy-DRL to pretrain a policy in a friction-free environment (around 1 million steps):
+Use Phy-DRL to pretrain a policy in an environment with some domain randomization employed:
 
    ```bash
    bash scripts/train/pretrain.sh
@@ -120,8 +120,7 @@ You can observe the training status using tensorboard:
    tensorboard --logdir ./results/logs
    ```
 
-To test the trained Phy-DRL policy, assign the model path for `CHECKPOINT` in the `scripts/test/pretrain.sh`,
-set `WITH_FRICTION` and `ACTUATOR_NOISE` to `false`, run command:
+To test the trained Phy-DRL policy, run command:
 
    ```bash
    bash scripts/test/pretrain.sh
@@ -135,9 +134,23 @@ The cartpole system will safely converge to the set point using control action f
  <br><b>Fig 1. A Well-trained Agent Provides Safety and Stability</b>
 </p>
 
-We now create a more real environment by introducing frictions and actuator noises: In `scripts/test/pretrain.sh`,
-set `WITH_FRICTION` and `ACTUATOR_NOISE` to `true`, run the script again. You will find that, due to the
-'sim-to-real' gap, the system will fail at the same initial condition:
+### Unknown unknowns
+
+---
+
+**`Safety-critical system:`** We model the Cartpole as a safety-critical system by defining the `Safety Set` (Group of
+all
+admissible states). Any safety violation will be highlighted in red during the animation. Since data-driven methods are
+inherently sensitive to environmental discrepancies, they cannot guarantee safety in the presence of unknown factors.
+
+To simulate these unknown unknowns, we further introduce:
+
+* *Increased cart friction*
+* *Out-of-distribution* cases for DRL
+* The *actuator noise*
+
+Running script `scripts/test/pretrain_fric30.sh`, the Cartpole system will violate the safety constraints in the unknown
+environment:
 
 <p align="center">
  <img src="./docs/GIFs/ani_pretrain_gap.gif" height="260" alt="ani_pretrain_gap"/> 
@@ -149,9 +162,11 @@ set `WITH_FRICTION` and `ACTUATOR_NOISE` to `true`, run the script again. You wi
 
 ---
 
+We must let agent continually learn in the unknown environment. Here we compare three learning strategies:
+
 #### 1. Unsafe Continual Learning
 
-Continual learning without safety guarantee:
+Continual learning without any safety guarantee in the unknown environment:
 
    ```bash
    bash scripts/train/unsafe_continual_learn.sh 
@@ -159,8 +174,8 @@ Continual learning without safety guarantee:
 
 #### 2. Runtime Learning Machine for safety assurance
 
-Runtime-Learning-Machine enables continual learning in the new environment, but HA-Teacher only guarantees safety (The
-HP-Student doesn't learn from HA-Teacher):
+In this mode, the **Runtime Learning Machine** enables continual learning in the unknown environment, but HA-Teacher
+only provides safety assurance (The HP-Student doesn't learn from HA-Teacher):
 
    ```bash
    bash scripts/train/rlm_assurance.sh 
@@ -168,8 +183,8 @@ HP-Student doesn't learn from HA-Teacher):
 
 #### 3. Runtime Learning Machine for safe continual learning
 
-Runtime-Learning-Machine enables continual learning in the new environment, the HA-Teacher guarantees safety and
-HP-Student learns from HA-Teacher:
+In this model, the **Runtime Learning Machine** enables continual learning in the unknown environment, the HA-Teacher
+provides safety guarantee and HP-Student learns from HA-Teacher:
 
    ```bash
    bash scripts/train/rlm_safe_learn.sh 
@@ -195,12 +210,12 @@ constraints*), and the ellipse represents the `Safety Envelope`:
 
 ---
 
-To show the agent's learning performance with **Runtime Learning Machine**, we select the same (unsafe) initial condition and
-continually train for 10 episodes, either with or without **Runtime Learning Machine**.
+To show the agent's learning performance with **Runtime Learning Machine**, we continually train the HP-Student for the
+same episodes, either with or without **Runtime Learning Machine**.
 
 - #### Unsafe Continual Learning
 
-During the first 10 episodes, the system frequently failed, preventing the agent from gathering sufficient data to learn
+In first 10 episodes, the system frequently failed, preventing the agent from gathering sufficient data to learn
 a safe policy.
 <p align="center">
  <img src="./docs/GIFs/ani_unsafe_learn.gif" height="260" alt="ani_unsafe_learn"/> 
@@ -210,8 +225,9 @@ a safe policy.
 
 - #### Runtime Learning Machine
 
-By Runtime-Learning-Machine, the cartpole would always keep in a safe condition. To validate the training performance, we disable the
-teacher module during testing, and the result shows that the agent has learned the safe behavior from teacher:
+By **Runtime Learning Machine**, the cartpole would always keep in a safe condition. To validate the training performance,
+we disable the
+teacher module during testing, and the result shows that the HP-Student has exhibited stable behavior:
 
 <p align="center">
   <img src="./docs/GIFs/ani_rlm_eval_10.gif" height="260" alt="ani_rlm_eval_10"/>

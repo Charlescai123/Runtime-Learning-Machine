@@ -14,8 +14,9 @@ FRICTION_CART=3
 FRICTION_POLE=0
 
 RANDOM_SEED=0
-TRAINING_BY_STEPS=true
-MAX_TRAINING_STEPS=1e5
+TRAINING_BY_STEPS=false
+MAX_TRAINING_STEPS=1e4
+MAX_TRAINING_EPISODES=50
 TRAIN_RANDOM_RESET=true
 EVAL_RANDOM_RESET=true
 GAMMA=0.8
@@ -26,6 +27,7 @@ python main.py \
   general.checkpoint=${CHECKPOINT} \
   general.training_by_steps=${TRAINING_BY_STEPS} \
   general.max_training_steps=${MAX_TRAINING_STEPS} \
+  general.max_training_episodes=${MAX_TRAINING_EPISODES} \
   cartpole.with_friction=${WITH_FRICTION} \
   cartpole.friction_cart=${FRICTION_CART} \
   cartpole.friction_pole=${FRICTION_POLE} \
