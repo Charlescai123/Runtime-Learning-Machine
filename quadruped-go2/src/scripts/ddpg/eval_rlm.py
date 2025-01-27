@@ -7,7 +7,6 @@ python -m src.scripts.ddpg.eval_rlm --logdir=logs/train/ddpg_trot/demo --num_env
 
 from absl import app
 from absl import flags
-# from absl import logging
 from isaacgym import gymapi, gymutil
 from datetime import datetime
 import os
@@ -27,7 +26,7 @@ torch.set_printoptions(precision=2, sci_mode=False)
 
 flags.DEFINE_string("logdir", None, "logdir.")
 flags.DEFINE_string("traj_dir", "logs/eval/", "traj_dir.")
-flags.DEFINE_bool("use_gpu", False, "whether to use GPU.")
+flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
 flags.DEFINE_integer("num_envs", 1,
@@ -55,7 +54,6 @@ def main(argv):
     del argv  # unused
     # print(f"flag: {FLAGS.save_traj}")
     # time.sleep(123)
-
 
     yaml_file_path = "src/configs/ddpg.yaml"
 

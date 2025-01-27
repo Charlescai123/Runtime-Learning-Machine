@@ -350,22 +350,6 @@ class Cartpole(gym.Env):
     def is_failed(self, x, theta):
         return self.is_trans_failed(x) or self.is_theta_failed(theta)
 
-    @staticmethod
-    def get_tracking_error(p_matrix, state_real, state_reference):
-
-        state = np.array(state_real[0:4])
-        state = np.expand_dims(state, axis=0)
-        state_ref = np.array(state_reference[0:4])
-        state_ref = np.expand_dims(state_ref, axis=0)
-
-        state_error = state - state_ref
-        eLya1 = np.matmul(state_error, p_matrix)
-        eLya = np.matmul(eLya1, np.transpose(state_error))
-
-        error = -eLya
-
-        return error
-
     def get_pP_and_vP(self):
         P = MATRIX_P
         pP = np.zeros((2, 2))
@@ -504,6 +488,7 @@ if __name__ == "__main__":
     target_height = 25
 
     from gym.envs.classic_control import rendering
+
     viewer = rendering.Viewer(screen_width, screen_height)
     target_trans = rendering.Transform()
     # target = rendering.Image('./docs/target.svg', width=target_width, height=target_height)

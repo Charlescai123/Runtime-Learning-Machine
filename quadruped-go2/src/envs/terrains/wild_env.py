@@ -20,6 +20,7 @@ class WildTerrainEnv:
             gym: Any,
             viewer: Any,
             env_handle: Any,
+            transform: Any
     ):
         """Initialize the wild terrain env class."""
 
@@ -39,7 +40,7 @@ class WildTerrainEnv:
         self._load_all_assets()
 
         # Simulate unnecessary terrain dynamics
-        self._simulate_irrelevant_dynamics()
+        # self._simulate_irrelevant_dynamics()
 
     def _init_buffers(self):
         pass
@@ -56,7 +57,7 @@ class WildTerrainEnv:
     def _load_all_assets(self):
 
         # Add outdoor scene
-        self.load_outdoor_asset(env=self._env, reverse=False)
+        # self.load_outdoor_asset(env=self._env, reverse=False)
         # Add uneven terrains
         add_uneven_terrains(gym=self._gym, sim=self._sim, reverse=False)
         pass

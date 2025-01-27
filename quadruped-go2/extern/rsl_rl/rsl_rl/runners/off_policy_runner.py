@@ -61,6 +61,7 @@ class OffPolicyRunner:
             self.env.episode_length_buf = torch.randint_like(self.env.episode_length_buf,
                                                              high=int(self.env.max_episode_length))
         obs = self.env.get_observations()
+        # time.sleep(123)
         privileged_obs = self.env.get_privileged_observations()
         critic_obs = privileged_obs if privileged_obs is not None else obs
         obs, critic_obs = obs.to(self.device), critic_obs.to(self.device)
@@ -83,7 +84,9 @@ class OffPolicyRunner:
 
             for i in range(self.num_steps_per_env):
                 actions = self.alg.act(obs, critic_obs)
+
                 prev_obs = self.env.get_observations()
+
                 obs, privileged_obs, rewards, dones, infos = self.env.step(actions)
                 # print(f"prev_obs: {prev_obs}")
                 # print(f"next_obs: {obs}")
@@ -92,8 +95,6 @@ class OffPolicyRunner:
                 prev_obs, obs, critic_obs, rewards, dones = prev_obs.to(self.device), obs.to(
                     self.device), critic_obs.to(self.device), rewards.to(self.device), dones.to(self.device)
                 # self.alg.process_env_step(rewards, dones, infos)
-                print(f"rewards: {rewards}")
-                print(f"rewards: {rewards.shape}")
                 transitions_list.append(
                     self.alg.process_env_step2(prev_obs=prev_obs, obs=obs, actions=actions, rewards=rewards,
                                                dones=dones, infos=infos))

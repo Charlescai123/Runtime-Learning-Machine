@@ -46,10 +46,10 @@ class Coordinator:
 
         for i, energy in enumerate(energy_2d):
             # Display current system status based on energy
-            if energy < epsilon[i]:
-                print(f"current system {i} energy status: {energy} < {epsilon[i]}, system is safe")
-            else:
-                print(f"current system {i} energy status: {energy} >= {epsilon[i]}, system is unsafe")
+            # if energy < epsilon[i]:
+            #     print(f"current system {i} energy status: {energy} < {epsilon[i]}, system is safe")
+            # else:
+            #     print(f"current system {i} energy status: {energy} >= {epsilon[i]}, system is unsafe")
 
             # When Teacher disabled or deactivated
             if not torch.any(ha_action[i]) and bool(dwell_flag[i]) is False:

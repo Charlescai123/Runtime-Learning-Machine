@@ -50,7 +50,6 @@ class RangeNormalize(AttributeModifier):
         action *= magnitude
         # action_zeros = torch.zeros_like(action)
         # print(f"action_zero is: {action_zeros}")
-        print(f"denormalized action: {action}")
         observ, privileged_obs, reward, done, info = self._env.step(action)
         observ = self._normalize_observ(observ)
         return observ, privileged_obs, reward, done, info
@@ -61,24 +60,22 @@ class RangeNormalize(AttributeModifier):
         return observ, privileged_obs
 
     def _denormalize_action(self, action):
+        """denormalize from [-1, 1]"""
         min_ = self._env.action_space[0]
         max_ = self._env.action_space[1]
-        print(f"min_: {min_}")
-        print(f"max_: {max_}")
         action = (action + 1) / 2 * (max_ - min_) + min_
         return action
 
     def _normalize_observ(self, observ):
+        """normalize to [-1, 1]"""
         min_ = self._env.observation_space[0]
         max_ = self._env.observation_space[1]
         observ = 2 * (observ - min_) / (max_ - min_) - 1
         return observ
 
     def get_observations(self):
-        print(f"self._env.get_observations: {self._env}")
         obs = self._env.get_observations()
-        print(f"!!!!!!!!! obs:{obs}")
-        return self._normalize_observ(self._env.get_observations())
+        return self._normalize_observ(obs)
 
 
 class ClipAction(AttributeModifier):

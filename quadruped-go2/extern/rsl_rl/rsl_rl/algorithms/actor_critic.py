@@ -287,7 +287,6 @@ class AbstractActorCritic(Agent):
         return timeouts
 
     def _process_dataset(self, dataset: Dataset) -> Dataset:
-        print(f"dataset: {dataset}")
         """Processes a dataset before it is added to the replay memory.
 
         Handles n-step returns and timeouts.
@@ -312,15 +311,15 @@ class AbstractActorCritic(Agent):
             for k in range(self._return_steps):
                 data = dataset[idx + k]
                 alive_idx = (dead_idx == 0).nonzero()
-                print(f"data['critic_observations']:{data['critic_observations']}")
-                print(f"data['actions']:{data['actions']}")
+                # print(f"data['critic_observations']:{data['critic_observations']}")
+                # print(f"data['actions']:{data['actions']}")
                 critic_predictions = self.critic.forward(
                     self._critic_input(
                         data["critic_observations"].clone().to(self.device).detach(),
                         data["actions"].clone().to(self.device).detach(),
                     )
                 ).detach()
-                print(f"critic_predictions: {critic_predictions}")
+                # print(f"critic_predictions: {critic_predictions}")
                 rewards[alive_idx] += self._discount_factor**k * data["rewards"][alive_idx]
                 rewards[alive_idx] += (
                     self._discount_factor ** (k + 1) * data["timeouts"][alive_idx] * critic_predictions[alive_idx]

@@ -9,7 +9,6 @@ from torch import optim
 from torch.distributions import Normal
 from typing import Dict, Union
 
-
 from rsl_rl.algorithms.dpg import AbstractDPG
 from rsl_rl.env import VecEnv
 from rsl_rl.modules.network import Network
@@ -27,6 +26,7 @@ class DDPG(AbstractDPG):
     Paper: https://arxiv.org/pdf/1509.02971.pdf
     """
     torch.autograd.set_detect_anomaly(True)
+
     def __init__(
             self,
             env: VecEnv,
@@ -179,8 +179,8 @@ class DDPG(AbstractDPG):
             )
             # print(f"target_actor:{target_actor_prediction}")
             target = rewards + self._discount_factor * (1 - dones) * target_critic_prediction
-            print(f"actions: {actions}")
-            print(f"critic_obs: {critic_obs}")
+            # print(f"actions: {actions}")
+            # print(f"critic_obs: {critic_obs}")
             prediction = self.critic.forward(self._critic_input(critic_obs, actions))
             critic_loss = (prediction - target).pow(2).mean()
 
@@ -256,7 +256,6 @@ class DDPG(AbstractDPG):
 
     def update_distribution(self, observations):
         mean = self.actor(observations)
-        # print(f"self.std: {self.std}")
         self.distribution = Normal(mean, mean * 0. + self.std)
 
     def nn_act(self, observations, **kwargs):

@@ -27,10 +27,10 @@ torch.set_printoptions(precision=2, sci_mode=False)
 
 flags.DEFINE_string("logdir", None, "logdir.")
 flags.DEFINE_string("traj_dir", "logs/eval/", "traj_dir.")
-flags.DEFINE_bool("use_gpu", False, "whether to use GPU.")
+flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
-flags.DEFINE_integer("num_envs", 1,
+flags.DEFINE_integer("num_envs", 1024,
                      "number of environments to evaluate in parallel.")
 flags.DEFINE_bool("save_traj", True, "whether to save trajectory.")
 flags.DEFINE_bool("use_contact_sensor", True, "whether to use contact sensor.")

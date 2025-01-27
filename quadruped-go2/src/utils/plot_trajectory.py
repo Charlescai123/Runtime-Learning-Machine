@@ -13,7 +13,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.collections import LineCollection
 
 
-def plot_robot_trajectory(filepath: str) -> None:
+def plot_robot_trajectory(filepath: str, device:str) -> None:
     with open(filepath, 'rb') as f:
         phases = pickle.load(f)
 
@@ -74,7 +74,7 @@ def plot_robot_trajectory(filepath: str) -> None:
 
         # Learning Machine
         energy.append(phases[i]['energy'].tolist())
-        action_mode.append(phases[i]['action_mode'])
+        action_mode.append(phases[i]['action_mode'].cpu().numpy().squeeze())
         hp_action.append(phases[i]['hp_action'].cpu().numpy().squeeze())
 
         if phases[i]['ha_action'] is None:
@@ -534,6 +534,8 @@ def save_trajectory_to_txt(filepath: str, outfile_path="data.csv") -> None:
 
 if __name__ == '__main__':
 
+    device = "cuda"
+
     if len(sys.argv) == 1:
         folder_name = "eval"
         file_order = -1
@@ -556,6 +558,6 @@ if __name__ == '__main__':
 
     # plot_robot_trajectory(filepath=f"{fp}")
     # save_trajectory_to_txt(fp, outfile_path=f"{dir_path}/data.csv")
-    plot_robot_trajectory(filepath=f"{fp}")
+    plot_robot_trajectory(filepath=f"{fp}", device=device)
 
     # plot_robot_trajectory("saved/logs/real_plant/updated_patch.pkl")

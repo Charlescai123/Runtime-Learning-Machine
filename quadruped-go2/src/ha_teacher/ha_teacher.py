@@ -3,6 +3,7 @@ import copy
 import time
 import traceback
 
+import ml_collections
 import numpy as np
 import cvxpy as cp
 import torch
@@ -20,7 +21,7 @@ np.set_printoptions(suppress=True)
 class HATeacher:
     """Monitors the safety-critical systems in all envs"""
 
-    def __init__(self, num_envs, teacher_cfg: DictConfig, device):
+    def __init__(self, num_envs, teacher_cfg: ml_collections.ConfigDict(), device):
         self._device = device
         self._num_envs = num_envs
 
@@ -28,8 +29,8 @@ class HATeacher:
         self.chi = torch.full((self._num_envs,), teacher_cfg.chi, dtype=torch.float32, device=device)
         self.epsilon = torch.full((self._num_envs,), teacher_cfg.epsilon, dtype=torch.float32, device=device)
         self.max_dwell_steps = torch.full((self._num_envs,), teacher_cfg.tau, dtype=torch.int64, device=device)
-        self.teacher_enable = torch.full((self._num_envs,), teacher_cfg.teacher_enable, dtype=torch.bool, device=device)
-        self.teacher_learn = torch.full((self._num_envs,), teacher_cfg.teacher_learn, dtype=torch.bool, device=device)
+        self.teacher_enable = torch.full((self._num_envs,), teacher_cfg.enable, dtype=torch.bool, device=device)
+        self.teacher_correct = torch.full((self._num_envs,), teacher_cfg.correct, dtype=torch.bool, device=device)
 
         self.cvxpy_solver = teacher_cfg.cvxpy_solver
         self.p_mat = to_torch(MATRIX_P, device=device)

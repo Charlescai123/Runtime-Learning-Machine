@@ -357,6 +357,8 @@ class QPTorqueOptimizer:
                  body_inertia=np.array([[0.1585, 0.0001, -0.0155],
                                         [0.0001, 0.4686, 0.],
                                         [-0.0155, 0., 0.5245]]),
+                 acc_lb=np.array([-10, -10, -10, -20, -20, -20]),
+                 acc_ub=np.array([10, 10, 10, 20, 20, 20]),
                  desired_body_height=0.3,
                  foot_friction_coef=0.7,
                  clip_grf=False,
@@ -367,12 +369,8 @@ class QPTorqueOptimizer:
         self._num_envs = self._robot.num_envs
         self._clip_grf = clip_grf
         self._use_full_qp = use_full_qp
-
-        # Self-defined for testing
-        base_position_kp = [0, 0, 100]
-        base_position_kd = [20, 20, 20]
-        base_orientation_kp = [100, 100, 0]
-        base_orientation_kd = [20, 20, 20]
+        self._acc_lb = to_torch(acc_lb, device=self._device)
+        self._acc_ub = to_torch(acc_ub, device=self._device)
 
         # Position and orientation kp/kd
         self._base_orientation_kp = to_torch(base_orientation_kp, device=self._device)
@@ -400,10 +398,6 @@ class QPTorqueOptimizer:
         self._inv_mass = torch.eye(3, device=self._device) / body_mass
         self._inv_inertia = torch.linalg.inv(to_torch(body_inertia, device=self._device))
 
-        # self._base_position_kp *= 20
-        # self._base_position_kd *= 20
-        # self._base_orientation_kp *= 20
-        # self._base_orientation_kd *= 20
         print(f"self._base_position_kp: {self._base_position_kp}")
         print(f"self._base_position_kd: {self._base_position_kd}")
         print(f"self._base_orientation_kp: {self._base_orientation_kp}")
@@ -488,16 +482,16 @@ class QPTorqueOptimizer:
         # time.sleep(123)
         desired_acc_body_frame = torch.clip(
             desired_acc_body_frame,
-            to_torch([-10, -10, -10, -20, -20, -20], device=self._device),
-            to_torch([10, 10, 10, 20, 20, 20], device=self._device))
+            self._acc_lb,
+            self._acc_ub)
 
         motor_torques, solved_acc, grf, qp_cost, num_clips = self._solve_joint_torques(
             foot_contact_state, desired_acc_body_frame)
 
-        print(f"self._robot.base_rot_mat_t: {self._robot.base_rot_mat_t}")
-        print(f"self._robot.base_rot_mat_t: {self._robot.base_rot_mat_t.shape}")
-        print(f"desired_foot_position: {desired_foot_position}")
-        print(f"desired_foot_position: {desired_foot_position.shape}")
+        # print(f"self._robot.base_rot_mat_t: {self._robot.base_rot_mat_t}")
+        # print(f"self._robot.base_rot_mat_t: {self._robot.base_rot_mat_t.shape}")
+        # print(f"desired_foot_position: {desired_foot_position}")
+        # print(f"desired_foot_position: {desired_foot_position.shape}")
         foot_position_local = torch.bmm(self._robot.base_rot_mat_t,
                                         desired_foot_position.transpose(
                                             1, 2)).transpose(1, 2)
@@ -583,8 +577,8 @@ class QPTorqueOptimizer:
         # time.sleep(123)
         desired_acc_body_frame = torch.clip(
             desired_acc_body_frame,
-            to_torch([-10, -10, -10, -20, -20, -20], device=self._device),
-            to_torch([10, 10, 10, 20, 20, 20], device=self._device))
+            self._acc_lb,
+            self._acc_ub)
         motor_torques, solved_acc, grf, qp_cost, num_clips = self._solve_joint_torques(
             foot_contact_state, desired_acc_body_frame)
         foot_position_local = torch.bmm(self._robot.base_rot_mat_t,
@@ -657,7 +651,8 @@ class QPTorqueOptimizer:
                    generated_acc=None):
         """Computes motor actions."""
 
-        generated_acc = torch.zeros((self._num_envs, 6)) if generated_acc is None else generated_acc
+        generated_acc = torch.zeros((self._num_envs, 6),
+                                    device=self._device) if generated_acc is None else generated_acc
         return self.compute_joint_command(
             foot_contact_state=foot_contact_state,
             desired_base_orientation_rpy=self._desired_base_orientation_rpy,

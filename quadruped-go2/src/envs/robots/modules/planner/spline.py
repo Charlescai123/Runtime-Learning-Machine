@@ -47,7 +47,6 @@ class Spline:
         print(f"self.T_control: {self.T_control}")
         print(f"self.T_dot_control: {self.T_dot_control}")
         print(f"self.T_ddot_control: {self.T_ddot_control}")
-        time.sleep(123)
 
         # in y, x
         # self.T_control @ MG outputs [1, T, 1, 2]

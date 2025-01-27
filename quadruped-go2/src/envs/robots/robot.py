@@ -176,7 +176,7 @@ class Robot:
         self._num_dof = self._gym.get_asset_dof_count(self._robot_asset)
         self._num_bodies = self._gym.get_asset_rigid_body_count(self._robot_asset)
 
-        spacing = 10.
+        spacing = 1.
         env_lower = gymapi.Vec3(-spacing, -spacing, 0.)
         env_upper = gymapi.Vec3(spacing, spacing, spacing)
         for i in range(self._num_envs):
@@ -187,7 +187,6 @@ class Robot:
             actor_handle = self._gym.create_actor(env_handle, self._robot_asset,
                                                   start_pose, f"robot", i,
                                                   asset_config.self_collisions, 0)
-            print(f"1")
             # Add outdoor scene
             world_env = self._world_env_type(
                 sim=self._sim,
@@ -195,7 +194,6 @@ class Robot:
                 viewer=self._viewer,
                 env_handle=env_handle
             )
-            print(f"2")
             # Add camera sensor
             camera_sensor = RGBDCamera(
                 robot=self,
@@ -204,7 +202,6 @@ class Robot:
                 viewer=self._viewer,
                 attached_rigid_body_index_in_env=0,  # Attach camera to robot base
             )
-            print(f"3")
             self._gym.enable_actor_dof_force_sensors(env_handle, actor_handle)
             self._envs.append(env_handle)
             self._world_envs.append(world_env)
@@ -380,10 +377,14 @@ class Robot:
         self._gym.set_actor_root_state_tensor(
             self._sim, gymtorch.unwrap_tensor(self._all_root_states)
         )
+
+        actor_root_state = self._gym.acquire_actor_root_state_tensor(self._sim)
+        # actor_root_state =
         # self._gym.set_actor_root_state_tensor_indexed(
         #     self._sim, gymtorch.unwrap_tensor(self._root_states),
         #     gymtorch.unwrap_tensor(env_ids_int32), len(env_ids_int32)
         # )
+
         # Reset dofs
         self._motor_positions[env_ids] = to_torch(self._init_motor_angles,
                                                   device=self._device,
@@ -397,6 +398,7 @@ class Robot:
         if len(env_ids) == self._num_envs:
             self._gym.simulate(self._sim)
 
+        self._gym.refresh_dof_state_tensor(self._sim)
         self._post_physics_step()
         # time.sleep(123)
 
