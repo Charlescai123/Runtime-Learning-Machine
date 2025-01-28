@@ -3,7 +3,6 @@ import sys
 import time
 
 from isaacgym import gymapi
-from src.configs.defaults import asset_options as asset_options_config
 from src.envs.terrains.utils import load_cement_road_asset, load_stone_asset
 from src.envs.terrains.utils import random_quaternion, add_uneven_terrains
 
@@ -20,7 +19,7 @@ class WildTerrainEnv:
             gym: Any,
             viewer: Any,
             env_handle: Any,
-            transform: Any
+            transform: gymapi.Transform()
     ):
         """Initialize the wild terrain env class."""
 
@@ -32,6 +31,7 @@ class WildTerrainEnv:
         # self._device = self._sim_config.sim_device
         self._actors = []
         self._env = env_handle
+        self._transform = transform
 
         # if "cuda" in self._device:
         #     torch._C._jit_set_profiling_mode(False)
@@ -40,14 +40,12 @@ class WildTerrainEnv:
         self._load_all_assets()
 
         # Simulate unnecessary terrain dynamics
-        # self._simulate_irrelevant_dynamics()
+        # self.simulate_irrelevant_dynamics()
 
-    def _init_buffers(self):
-        pass
-
-    def _simulate_irrelevant_dynamics(self, step_cnt=1000):
+    def simulate_irrelevant_dynamics(self, step_cnt=1000):
         """Simulate and bypass irrelevant terrain dynamics initially to prevent unwanted motion in subsequent robot
         interactions."""
+        self._gym.prepare_sim(self._sim)
         for _ in range(step_cnt):
             self._gym.simulate(self._sim)
             # self._gym.fetch_results(self._sim, True)
@@ -55,14 +53,16 @@ class WildTerrainEnv:
             # self._gym.draw_viewer(self._viewer, self._sim, True)
 
     def _load_all_assets(self):
-
+        print(f"loading all assets....")
+        # offset_x = 40
+        offset_x = 0
         # Add outdoor scene
-        # self.load_outdoor_asset(env=self._env, reverse=False)
+        self.load_outdoor_asset(env=self._env, scene_offset_x=offset_x, reverse=False)
         # Add uneven terrains
-        add_uneven_terrains(gym=self._gym, sim=self._sim, reverse=False)
-        pass
+        add_uneven_terrains(gym=self._gym, sim=self._sim, scene_offset_x=offset_x + self._transform.x,
+                            scene_offset_y=self._transform.y, reverse=False)
 
-    def load_outdoor_asset(self, env, scene_offset_x=40, reverse=False):
+    def load_outdoor_asset(self, env, scene_offset_x=0, reverse=False):
         if reverse:
             offset_x = -28 + scene_offset_x
         else:
@@ -87,14 +87,14 @@ class WildTerrainEnv:
         self._actors.append(actor)
 
         # Mountain Rocks
-        self.load_mountain_rocks(env=env, offset_x=offset_x, offset_y=offset_y)
+        # self.load_mountain_rocks(env=env, offset_x=offset_x, offset_y=offset_y)
 
         # Snow Rocks
         self.load_snow_rocks(env=env, offset_x=offset_x, offset_y=offset_y)
 
         # Random stones
-        self.load_random_snowstones_in_a_region(env=env, stone_nums=450, reverse=reverse)
-        self.load_random_cobblestones_in_a_region(env=env, stone_nums=150, reverse=reverse)
+        self.load_random_snowstones_in_a_region(env=env, scene_offset_x=offset_x, stone_nums=450, reverse=reverse)
+        self.load_random_cobblestones_in_a_region(env=env, scene_offset_x=offset_x, stone_nums=150, reverse=reverse)
 
     def load_mountain_rocks(self, env, offset_x, offset_y):
         offset_x -= 7
@@ -206,6 +206,3 @@ class WildTerrainEnv:
             stone_actor = load_stone_asset(self._gym, self._sim, env=env, pos=(x, y, 0.007), name=f"cobblestones{i}",
                                            fix_base_link=True, rot=tuple(random_quat), apply_texture=True, scale=scale)
             self._actors.append(stone_actor)
-
-    def init_buffers(self):
-        self._init_buffers()

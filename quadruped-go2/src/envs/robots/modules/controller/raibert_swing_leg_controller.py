@@ -199,7 +199,4 @@ class RaibertSwingLegController:
             self._gait_generator.normalized_phase,
             self._phase_switch_foot_positions,
         )
-
-        # print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!desired_foot_pos: {desired_foot_pos}")
-
         return desired_foot_pos

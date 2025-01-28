@@ -199,8 +199,6 @@ class StateEstimator:
         self._ground_normal = self._ground_normal_filter.calculate_average(_ground_normal_vec)
         self._ground_normal /= np.linalg.norm(self._ground_normal)
 
-        print(f"_ground_normal: {self._ground_normal}")
-        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         # time.sleep(0.5)
 
     # def _update_com_position_ground_frame(self, foot_positions: np.ndarray):
@@ -220,7 +218,6 @@ class StateEstimator:
         Solves a least-squares problem, see the following paper for details:
         https://ieeexplore.ieee.org/document/7354099
         """
-        print(f"foot_positions_body_frame: {foot_positions_body_frame}")
         contact_foot_positions = np.asarray(foot_positions_body_frame)
         normal_vec = np.linalg.lstsq(contact_foot_positions, np.ones(4))[0]
         normal_vec /= np.linalg.norm(normal_vec)
@@ -291,8 +288,6 @@ class StateEstimator:
 
             ground_orientation_matrix_robot_frame = p.getMatrixFromQuaternion(
                 self.ground_orientation_in_robot_frame)
-            print(f"self._ground_norm_vec: {self._ground_normal}")
-            print(f"ground_orientation_matrix_robot_frame: {ground_orientation_matrix_robot_frame}")
             # time.sleep(0.1)
 
             # Reshape
@@ -317,13 +312,9 @@ class StateEstimator:
         from isaacgym import gymapi
         import torch
         orientation = self.robot.base_orientation_quat[0]
-        print(f"ori: {orientation}")
-        # 计算地面法向量
         quat = gymapi.Quat(orientation[0].item(), orientation[1].item(), orientation[2].item(),
                            orientation[3].item())
-        up_vector = quat.rotate(gymapi.Vec3(0, 0, 1))  # 世界 z 轴方向
+        up_vector = quat.rotate(gymapi.Vec3(0, 0, 1))  # z-axis in world
 
-        # 计算坡度角度（与 z 轴夹角）
-        slope_angle = torch.acos(torch.tensor(up_vector.z))  # z 分量
-        slope_deg = slope_angle * 180.0 / 3.14159  # 转换为角度
-        print(f"slope_deg: {slope_deg}")
+        slope_angle = torch.acos(torch.tensor(up_vector.z))  # z-axis in slope
+        slope_deg = slope_angle * 180.0 / 3.14159  # rad2deg

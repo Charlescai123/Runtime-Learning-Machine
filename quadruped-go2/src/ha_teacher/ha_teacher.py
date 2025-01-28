@@ -41,14 +41,14 @@ class HATeacher:
         self._patch_center = torch.zeros((self._num_envs, 12), dtype=torch.float32, device=device)
         self._center_update = torch.full((self._num_envs,), True, dtype=torch.bool, device=device)
         self._dwell_step = torch.zeros(self._num_envs, dtype=torch.float32, device=device)
-        _patch_interval = 5
+        _patch_interval = 2
         self.patch_interval = torch.full((self._num_envs,), _patch_interval, dtype=torch.int64, device=device)
         _apply_rt_patch = True  #
         self.apply_realtime_patch = torch.full((self._num_envs,), _apply_rt_patch, dtype=torch.bool, device=device)
 
         # Patch kp and kd
-        # self._default_kp = torch.diag(to_torch([0., 0., 100., 100., 100., 0.], device=device))
-        # self._default_kd = torch.diag(to_torch([40., 30., 10., 10., 10., 30.], device=device))
+        # self._default_kp = torch.diag(to_torch([0., 0., 50., 50., 50., 0.], device=device))
+        # self._default_kd = torch.diag(to_torch([10., 10., 10., 10., 10., 10.], device=device))
         self._default_kp = to_torch([[-0., -0., -0., -0., -0., -0.],
                                      [-0., -0., -0., -0., -0., -0.],
                                      [-0., -0., 296., 0., - 0., 0.],
@@ -61,8 +61,6 @@ class HATeacher:
                                      [0., 0., -0., 26, 0., 0.],
                                      [-0., 0., 0., -0., 26., -0.],
                                      [0., 0., 0., 0., -0., 25.]], device=device)
-        # self._default_kp = torch.diag(to_torch([0, 0, 100, 100, 100, 0], device=device))
-        # self._default_kd = torch.diag(to_torch([20, 20, 20, 20, 20, 20,], device=device))
 
         self._patch_kp = torch.stack([to_torch(self._default_kp, device=self._device)] * self._num_envs, dim=0)
         self._patch_kd = torch.stack([to_torch(self._default_kd, device=self._device)] * self._num_envs, dim=0)
@@ -142,10 +140,6 @@ class HATeacher:
         kp_mul_term = (self._plant_state[indices, :6] - self._patch_center[indices, :6])
         kd_mul_term = (self._plant_state[indices, 6:] - self._patch_center[indices, 6:])
 
-        # actions[indices.flatten()] = np.squeeze(self._patch_kp[indices] @ kp_mul_term[..., np.newaxis]
-        #                                         + self._patch_kd[indices] @ kd_mul_term[..., np.newaxis])
-        print(f"kp_mul_term: {kp_mul_term.shape}")
-        print(f"self._patch_kp[indices]: {self._patch_kp[indices].shape}")
         # res = self._patch_kp[indices] @ kp_mul_term.unsqueeze(-1) + self._patch_kd[indices] @ kd_mul_term.unsqueeze(-1)
         actions[indices.flatten()] = torch.squeeze(self._patch_kp[indices] @ kp_mul_term.unsqueeze(-1) +
                                                    self._patch_kd[indices] @ kd_mul_term.unsqueeze(-1))
@@ -160,19 +154,11 @@ class HATeacher:
         return actions, dwell_flags
 
     def realtime_patch(self, idx):
-        s = time.time()
         roll, pitch, yaw = self._plant_state[idx, 3:6]
-        # roll_1d, pitch_1d, yaw_1d = self._plant_state[idx, 3:6]
-        # roll = roll.numpy()
-        # pitch = pitch.numpy()
-        # yaw = yaw.numpy()
-        self._patch_kp[idx, :], self._patch_kd[idx, :] = self.system_patch(roll=roll, pitch=pitch, yaw=yaw,
+        self._patch_kp[idx, :], self._patch_kd[idx, :] = self.system_patch(roll=roll.cpu(), pitch=pitch.cpu(),
+                                                                           yaw=yaw.cpu(),
                                                                            device=self._device)
-        # self._patch_kp, self._patch_kd = self.system_patch_2d(roll_1d=roll_1d, pitch_1d=pitch_1d, yaw_1d=yaw_1d)
         e = time.time()
-        # print(f"roll pitch yaw: {roll}, {pitch}, {yaw}")
-        # print(f"self._patch_kp: {self._patch_kp}")
-        # print(f"self._patch_kd: {self._patch_kd}")
         # print(f"patch time: {e - s}")
 
     # from numba import njit, jit

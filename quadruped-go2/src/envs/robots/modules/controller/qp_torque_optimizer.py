@@ -131,6 +131,60 @@ def compute_desired_acc(
 
 
 @torch.jit.script
+def get_desired_acc(
+        base_orientation_rpy: torch.Tensor,
+        base_position: torch.Tensor,
+        base_angular_velocity_body_frame: torch.Tensor,
+        base_velocity_body_frame: torch.Tensor,
+        desired_base_orientation_rpy: torch.Tensor,
+        desired_base_position: torch.Tensor,
+        desired_angular_velocity: torch.Tensor,
+        desired_linear_velocity: torch.Tensor,
+        base_position_kp: torch.Tensor,
+        base_position_kd: torch.Tensor,
+        base_orientation_kp: torch.Tensor,
+        base_orientation_kd: torch.Tensor,
+        device: str = "cuda",
+):
+    base_rpy = base_orientation_rpy
+    base_quat = quat_from_euler_xyz(
+        base_rpy[:, 0], base_rpy[:, 1],
+        torch.zeros_like(base_rpy[:, 0], device=device))
+
+    # base_quat = quat_from_euler_xyz(
+    #     base_rpy[:, 0], base_rpy[:, 1],
+    #     base_rpy[:, 2])
+
+    base_rot_mat = quat_to_rot_mat(base_quat)
+    base_rot_mat_t = torch.transpose(base_rot_mat, 1, 2)
+
+    # Origin
+    lin_pos_error = desired_base_position - base_position
+    lin_pos_error[:, :2] = 0  # Set px, py to be zero
+    lin_vel_error = desired_linear_velocity - torch.matmul(
+        base_rot_mat, base_velocity_body_frame[:, :, None])[:, :, 0]
+
+    # gravity frame is the world frame
+    desired_lin_acc_gravity_frame = (base_position_kp * lin_pos_error +
+                                     base_position_kd * lin_vel_error)
+    # Origin (rpy)
+    ang_pos_error = desired_base_orientation_rpy - base_rpy
+
+    ang_vel_error = desired_angular_velocity - torch.matmul(
+        base_rot_mat, base_angular_velocity_body_frame[:, :, None])[:, :, 0]
+
+    desired_ang_acc_gravity_frame = (base_orientation_kp * ang_pos_error +
+                                     base_orientation_kd * ang_vel_error)
+
+    desired_lin_acc_body_frame = torch.matmul(
+        base_rot_mat_t, desired_lin_acc_gravity_frame[:, :, None])[:, :, 0]
+    desired_ang_acc_body_frame = torch.matmul(
+        base_rot_mat_t, desired_ang_acc_gravity_frame[:, :, None])[:, :, 0]
+
+    return torch.concatenate((desired_lin_acc_body_frame, desired_ang_acc_body_frame), dim=1)
+
+
+@torch.jit.script
 def compute_safe_acc(
         base_orientation_rpy: torch.Tensor,
         base_position: torch.Tensor,
@@ -402,7 +456,6 @@ class QPTorqueOptimizer:
         print(f"self._base_position_kd: {self._base_position_kd}")
         print(f"self._base_orientation_kp: {self._base_orientation_kp}")
         print(f"self._base_orientation_kd: {self._base_orientation_kd}")
-        # time.sleep(123)
 
     def _solve_joint_torques(self, foot_contact_state, desired_com_ddq):
         """Solves centroidal QP to find desired joint torques."""
@@ -441,6 +494,41 @@ class QPTorqueOptimizer:
         all_foot_jacobian = self._robot.all_foot_jacobian
         motor_torques = -torch.bmm(grf[:, None, :], all_foot_jacobian)[:, 0]
         return motor_torques, solved_acc, grf, qp_cost, num_clips
+
+    def get_model_action(self,
+                         foot_contact_state: torch.Tensor,
+                         desired_foot_position: torch.Tensor):
+
+        desired_acc_body_frame = get_desired_acc(
+            self._robot.base_orientation_rpy,
+            self._robot.base_position,
+            self._robot.base_angular_velocity_body_frame,
+            self._robot.base_velocity_body_frame,
+            self.desired_base_orientation_rpy,
+            self.desired_base_position,
+            self.desired_angular_velocity,
+            self.desired_linear_velocity,
+            self._base_position_kp,
+            self._base_position_kd,
+            self._base_orientation_kp,
+            self._base_orientation_kd,
+            device=self._device
+        )
+
+        desired_acc_body_frame = torch.clip(
+            desired_acc_body_frame,
+            self._acc_lb,
+            self._acc_ub)
+
+        motor_torques, solved_acc, grf, qp_cost, num_clips = self._solve_joint_torques(
+            foot_contact_state, desired_acc_body_frame)
+
+        foot_position_local = torch.bmm(self._robot.base_rot_mat_t,
+                                        desired_foot_position.transpose(
+                                            1, 2)).transpose(1, 2)
+        foot_position_local[:, :, 2] = torch.clip(foot_position_local[:, :, 2], min=-0.35, max=-0.1)
+
+        return desired_acc_body_frame, solved_acc, qp_cost, num_clips
 
     def compute_joint_command(self,
                               foot_contact_state: torch.Tensor,

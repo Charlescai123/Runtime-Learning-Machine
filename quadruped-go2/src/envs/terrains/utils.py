@@ -26,9 +26,6 @@ def load_cement_road_asset(gym, sim, env, name="cement_road", collision_group=-1
     x, y, z = pos[:]
     X, Y, Z, W = rot[:]
     transform = gymapi.Transform(p=gymapi.Vec3(x, y, z), r=gymapi.Quat(X, Y, Z, W))
-    print(f"transform.p: {transform.p}")
-    print(f"transform.r: {transform.r}")
-    # time.sleep(123)
 
     asset_root = ASSET_ROOT
     asset_urdf = CEMENT_ROAD_ASSET
@@ -100,10 +97,7 @@ def load_stone_asset(gym, sim, env, name="stone", pos=(0, 0, 0), rot=(0, 0, 0, 1
     return actor_stone
 
 
-
-
-
-def add_uneven_terrains(gym, sim, scene_offset_x=40, reverse=False):
+def add_uneven_terrains(gym, sim, scene_offset_x=0, scene_offset_y=0, reverse=False):
     # terrains
     num_terrains = 1
     terrain_width = 12.
@@ -145,7 +139,7 @@ def add_uneven_terrains(gym, sim, scene_offset_x=40, reverse=False):
         tm_params.transform.p.x = -19.8 + scene_offset_x
     else:
         tm_params.transform.p.x = 8. + scene_offset_x
-    tm_params.transform.p.y = -terrain_width / 2 - 1. + 1
+    tm_params.transform.p.y = -terrain_width / 2 - 1. + 1 + scene_offset_y
     gym.add_triangle_mesh(sim, vertices.flatten(), triangles.flatten(), tm_params)
 
     # vertices, triangles = convert_heightfield_to_trimesh(terrain.height_field_raw,

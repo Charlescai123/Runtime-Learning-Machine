@@ -2,7 +2,7 @@
 import warnings
 
 """
-python -m src.scripts.ddpg.eval --logdir=logs/ddpg_trot/2025_01_26_18_41_41 --num_envs=1 --use_gpu=True --show_gui=True --use_real_robot=False --save_traj=True
+python -m src.scripts.ddpg.eval --logdir=logs/ddpg_trot/2025_01_27_15_06_02 --num_envs=1 --use_gpu=True --show_gui=True --use_real_robot=False --save_traj=True
 """
 
 from absl import app
@@ -28,6 +28,7 @@ torch.set_printoptions(precision=2, sci_mode=False)
 flags.DEFINE_string("logdir", None, "logdir.")
 flags.DEFINE_string("traj_dir", "logs/eval/", "traj_dir.")
 flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
+flags.DEFINE_bool("enable_ha_teacher", True, "whether to enable the HA-Teacher.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
 flags.DEFINE_integer("num_envs", 1,
@@ -72,6 +73,12 @@ def main(argv):
     with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.load(f, Loader=yaml.Loader)
 
+    # HA-Teacher module
+    if FLAGS.enable_ha_teacher:
+        config.environment.ha_teacher.enable = True
+        config.environment.ha_teacher.chi = 0.2
+        config.environment.ha_teacher.tau = 150
+
     env = config.env_class(num_envs=FLAGS.num_envs,
                            device=device,
                            config=config.environment,
@@ -104,8 +111,13 @@ def main(argv):
 
     # env._torque_optimizer._base_position_kp *= 0.5
     # env._torque_optimizer._base_position_kd *= 0.5
-    # env._torque_optimizer._base_orientation_kd *= 0.5
     # env._torque_optimizer._base_orientation_kp *= 0.5
+    # env._torque_optimizer._base_orientation_kd *= 0.5
+
+    # print(f"env._torque_optimizer._base_position_kp: {env._torque_optimizer._base_position_kp}")
+    # print(f"env._torque_optimizer._base_position_kd: {env._torque_optimizer._base_position_kd}")
+    # print(f"env._torque_optimizer._base_orientation_kp: {env._torque_optimizer._base_orientation_kp}")
+    # print(f"env._torque_optimizer._base_orientation_kd: {env._torque_optimizer._base_orientation_kd}")
 
     # time.sleep(1)
     start_time = time.time()
@@ -117,8 +129,8 @@ def main(argv):
             # time.sleep(0.02)
             print(f"state is: {state}")
 
-            action = policy(state)
-            # action = torch.zeros([1, 6], device=device)
+            # action = policy(state)
+            action = torch.zeros([1, 6], device=device)
 
             def add_beta_noise(action):
                 np.random.seed(1)
@@ -130,7 +142,7 @@ def main(argv):
 
             # Add beta noise
             print(f"pre action is: {action}")
-            # action = add_beta_noise(action=action)
+            action = add_beta_noise(action=action)
             print(f"action is: {action}")
 
             print(f"action is: {action}")
@@ -146,7 +158,7 @@ def main(argv):
             # if done.any():
             #     print(info["episode"])
             #     break
-            if steps_count == 1000:
+            if steps_count == 1000 or done.any():
                 break
             print(f"steps_count: {steps_count}")
             e = time.time()

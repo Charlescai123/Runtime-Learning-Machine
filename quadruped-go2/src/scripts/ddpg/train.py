@@ -16,7 +16,7 @@ from rsl_rl.runners import OnPolicyRunner, OffPolicyRunner
 from src.envs import env_wrappers
 
 config_flags.DEFINE_config_file("config", "src/configs/trot.py", "experiment configuration.")
-flags.DEFINE_integer("num_envs", 100, "number of parallel environments.")
+flags.DEFINE_integer("num_envs", 2, "number of parallel environments.")
 flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_string("logdir", "logs", "logdir.")
