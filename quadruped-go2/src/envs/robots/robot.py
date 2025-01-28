@@ -61,12 +61,9 @@ class Robot:
         self._envs = []
         self._world_envs = []
         self._robot_actors = []
-        self._camera_sensors = []
 
         self._robot_actors_global_indices = []
         self._robot_rigid_body_global_indices = []
-
-        self.record_video = False  # Record a video or not
 
         if "cuda" in self._device:
             torch._C._jit_set_profiling_mode(False)
@@ -600,10 +597,6 @@ class Robot:
     def control_timestep(self):
         return self._sim_config.dt * self._sim_config.action_repeat
 
-    @property
-    def camera_sensor(self):
-        return self._camera_sensors
-
     def subscribe_viewer_keyboard_event(self):
         # self._gym.subscribe_viewer_keyboard_event(self._viewer, gymapi.KEY_ESCAPE, "QUIT")
         self._gym.subscribe_viewer_keyboard_event(self._viewer, gymapi.KEY_V, "toggle_viewer_sync")
@@ -690,9 +683,3 @@ class Robot:
                 self._gym.sync_frame_time(self._sim)
 
             self._gym.poll_viewer_events(self._viewer)
-
-            # Record a video or not
-            if self.record_video:
-                _depth_img = self._camera_sensors[0].get_current_frame()
-                self._frames.append(_depth_img)
-                pass

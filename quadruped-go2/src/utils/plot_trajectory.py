@@ -545,7 +545,7 @@ if __name__ == '__main__':
         file_order = int(sys.argv[1])
 
     # dir_name = f"logs/{folder_name}/2024_10_23_20_21_19"
-    dir_name = f"logs/{folder_name}/"
+    dir_name = f"logs/{folder_name}"
 
     # dir_name = "logs/robot/real_plant"
     files = os.listdir(dir_name)

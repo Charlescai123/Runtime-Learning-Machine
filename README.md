@@ -34,4 +34,12 @@ agent to safely learn (right)</b>
 
 ---
 
+A Sim-to-Sim policy transfer from Pybullet A1 robot to IsaacGym Go2 robot. With **Runtime Learning Machine**
+architecture to address real-time safety concern from unknown environment.
+
+<p align="center">
+ <img src="./quadruped-go2/docs/rlm_go2_push.gif" height="400" alt="ani_pretrain"/> 
+ <br><b>Fig. Safety Performance of Runtime Learning Machine under Random Push</b>
+</p>
+
 # Citation

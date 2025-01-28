@@ -56,7 +56,7 @@ We deploy a *sim-to-sim* policy (Phy-DRL) trained in the PyBullet environment on
 IsaacGym for the Go2 robot.
 
 <p align="center">
- <img src="./docs/scene.png" alt="ani_pretrain"/> 
+ <img src="./docs/scene.png" height="500" alt="ani_pretrain"/> 
  <br><b>Fig 1. A Sim-to-Sim policy transfer in unforeseen Environment on Quadruped Go2</b>
 </p>
 
@@ -113,3 +113,9 @@ The **Runtime Learning Machine** facilitates the rapid adaptation of the quadrup
 ```bash
 python -m src.scripts.ddpg.train --use_gpu=True --enable_ha_teacher=True
 ```
+
+## Misc
+
+---
+
+- In order to plot the latest saved trajectory, run command `python -m src.utils.plot_trajectory`

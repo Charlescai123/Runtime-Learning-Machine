@@ -551,15 +551,7 @@ class Go2TrotEnv:
             self._robot.base_angular_velocity_body_frame,
         ), dim=-1)
 
-        # print(f"desired: {desired}")
-        # print(f"curr: {curr}")
-        # print(f"diff: {curr - desired}")
-
         robot_obs = self._torque_optimizer.tracking_error
-        # print(f"s_desired_next: {s_desired_next}")
-        # print(f"s_old_next: {s_old_next}")
-        # print(f"robot_obs: {robot_obs}")
-
         obs = robot_obs
         # if self._config.get("observation_noise", None) is not None and (not self._use_real_robot):
         #     obs += torch.randn_like(obs) * self._config.observation_noise
