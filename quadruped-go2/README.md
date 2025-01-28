@@ -91,7 +91,7 @@ python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 
 ```
 
 <p align="center">
- <img src="./docs/rlm_go2.gif" height="420" alt="ani_pretrain"/> 
+ <img src="./docs/rlm_go2.gif" height="440" alt="ani_pretrain"/> 
  <br><b>Fig 2. Runtime Learning Machine on Quadruped Go2 in unforeseen Environment</b>
 </p>
 
@@ -102,7 +102,7 @@ python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 
 ```
 
 <p align="center">
- <img src="./docs/rlm_go2_push.gif" height="420" alt="ani_pretrain"/> 
+ <img src="./docs/rlm_go2_push.gif" height="440" alt="ani_pretrain"/> 
  <br><b>Fig 3. Safety Performance of Runtime Learning Machine under Random Push</b>
 </p>
 
