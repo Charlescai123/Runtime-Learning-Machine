@@ -6,10 +6,8 @@ from isaacgym import gymapi
 from src.envs.terrains.utils import load_cement_road_asset, load_stone_asset
 from src.envs.terrains.utils import random_quaternion, add_uneven_terrains
 
-import torch
 import numpy as np
 from typing import Any, List
-import ml_collections
 
 
 class WildTerrainEnv:

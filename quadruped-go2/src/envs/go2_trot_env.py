@@ -62,10 +62,6 @@ def create_sim(sim_conf):
     else:
         graphics_device_id = -1
 
-    # print(f"self.sim_device_id: {sim_device_id}")
-    # print(f"self.graphics_device_id: {graphics_device_id}")
-    # print(f"self.physics_engine: {sim_conf.physics_engine}")
-    # print(f"self.sim_params: {sim_conf.sim_params}")
     sim = gym.create_sim(sim_device_id, graphics_device_id, sim_conf.physics_engine, sim_conf.sim_params)
 
     if sim_conf.show_gui:
@@ -285,7 +281,6 @@ class Go2TrotEnv:
         self._extras["time_outs"] = self._episode_terminated()
         if env_ids.shape[0] > 0:
             self._extras["episode"] = {}
-            print(f"self._gait_generator.true_phase[env_ids]: {self._gait_generator.true_phase[env_ids]}")
             # time.sleep(123)
             self._extras["episode"]["cycle_count"] = torch.mean(
                 self._gait_generator.true_phase[env_ids]) / (2 * torch.pi)
@@ -455,9 +450,9 @@ class Go2TrotEnv:
             # Error in last step
             err_prev = self._torque_optimizer.tracking_error
 
-            ######### Step The Motor Action #########
+            ####################### Step The Motor Action #######################
             self._robot.step(motor_action)
-            #########################################
+            #####################################################################
 
             self._obs_buf = self._get_observations()
             self._privileged_obs_buf = self.get_privileged_observations()
@@ -469,7 +464,7 @@ class Go2TrotEnv:
             rewards = self.get_lyapunov_reward(err=err_prev, err_next=err_next)
 
             # Dones or not
-            dones = torch.logical_or(dones, self._is_done())
+            # dones = torch.logical_or(dones, self._is_done())
 
             # Sum reward
             sum_reward += rewards * torch.logical_not(dones)
@@ -483,7 +478,7 @@ class Go2TrotEnv:
 
             # Monitor the pusher
             self._push_flag = self._pusher.monitor_push(step_cnt=self._step_cnt,
-                                                        env_ids=to_torch([0], dtype=torch.int, device=self._device))
+                                                        env_ids=torch.arange(self._num_envs, device=self._device))
 
             self._step_cnt += 1
 

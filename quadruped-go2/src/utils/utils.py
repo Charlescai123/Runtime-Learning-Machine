@@ -53,6 +53,7 @@ class RobotPusher:
         self._device = device
 
         # Push statistics
+        self.push_enable = False
         self.push_cnt = 0
         self.begin_push_step = 98
 
@@ -61,8 +62,6 @@ class RobotPusher:
         self.indicator_cnt = 0
         self.indicator_max = 50
         random_push_sequence = generate_seed_sequence(seed=1, num_seeds=100)
-        dual_push_sequence = [0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1]
-        push_magnitude_list = [-1.0, 1.2, -1.3, 1.4, -1.5]
 
         # For backwards
         # push_delta_vel_list_x = [-0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25]
@@ -72,21 +71,22 @@ class RobotPusher:
 
         # For forward
         self._push_delta_vel_list_x = to_torch([0.25, 0.25, 0.25, 0.25, 0.3, 0.25, 0.25], device=device)
-        self._push_delta_vel_list_y = to_torch([-0.55, 0.65, -0.8, 0.6, -0.7, 0.7, -0.6], device=device)
+        self._push_delta_vel_list_y = to_torch([-0.55, 0.65, -0.6, 0.6, -0.7, 0.7, -0.6], device=device)
         self._push_delta_vel_list_z = to_torch([-0.762, -0.7, -0.72, -0.72, -0.72, -0.72, -0.72], device=device)
 
         # Push interval
-        self._push_interval = to_torch([200, 350, 620, 750, 850, 1000, 1050, 1200], dtype=torch.int, device=device) - 1
+        self._push_interval = to_torch([200, 380, 620, 750, 850, 1000, 1050, 1200], dtype=torch.int, device=device) - 1
 
     def monitor_push(self, step_cnt, env_ids):
         if step_cnt > self.begin_push_step and step_cnt == self._push_interval[self.push_cnt]:
-            print(f"cnt is: {step_cnt}, pushing the robot now")
 
-            self._push_robot_idx(env_ids)
-            # self._push_robots()
+            if self.push_enable:
+                print(f"cnt is: {step_cnt}, pushing the robot now")
+                self._push_robot_idx(env_ids)
+                # self._push_robots()
 
-            self.indicator_flag = True
-            return True
+                self.indicator_flag = True
+                return True
         return False
 
     def _push_robot_idx(self, env_ids):

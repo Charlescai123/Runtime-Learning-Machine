@@ -2,7 +2,7 @@
 import warnings
 
 """
-python -m src.scripts.ddpg.eval --logdir=logs/ddpg_trot/2025_01_27_15_06_02 --num_envs=1 --use_gpu=True --show_gui=True --use_real_robot=False --save_traj=True
+python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=True --enable_ha_teacher=True
 """
 
 from absl import app
@@ -28,7 +28,8 @@ torch.set_printoptions(precision=2, sci_mode=False)
 flags.DEFINE_string("logdir", None, "logdir.")
 flags.DEFINE_string("traj_dir", "logs/eval/", "traj_dir.")
 flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
-flags.DEFINE_bool("enable_ha_teacher", True, "whether to enable the HA-Teacher.")
+flags.DEFINE_bool("enable_ha_teacher", False, "whether to enable the HA-Teacher.")
+flags.DEFINE_bool("enable_pusher", False, "whether to enable the robot pusher.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
 flags.DEFINE_integer("num_envs", 1,
@@ -54,8 +55,6 @@ def get_latest_policy_path(logdir):
 
 def main(argv):
     del argv  # unused
-    # print(f"flag: {FLAGS.save_traj}")
-    # time.sleep(123)
 
     # Load config and policy
     if FLAGS.logdir.endswith("pt"):
@@ -76,7 +75,7 @@ def main(argv):
     # HA-Teacher module
     if FLAGS.enable_ha_teacher:
         config.environment.ha_teacher.enable = True
-        config.environment.ha_teacher.chi = 0.2
+        config.environment.ha_teacher.chi = 0.15
         config.environment.ha_teacher.tau = 150
 
     env = config.env_class(num_envs=FLAGS.num_envs,
@@ -84,7 +83,11 @@ def main(argv):
                            config=config.environment,
                            show_gui=FLAGS.show_gui,
                            use_real_robot=FLAGS.use_real_robot)
-    # add_uneven_terrains(gym=gym, sim=sim)
+
+    # Robot pusher
+    if FLAGS.enable_pusher:
+        env._pusher.push_enable = True
+
     env = env_wrappers.RangeNormalize(env)
     if FLAGS.use_real_robot:
         env.robot.state_estimator.use_external_contact_estimator = (not FLAGS.use_contact_sensor)
@@ -129,8 +132,8 @@ def main(argv):
             # time.sleep(0.02)
             print(f"state is: {state}")
 
-            # action = policy(state)
-            action = torch.zeros([1, 6], device=device)
+            action = policy(state)
+            # action = torch.zeros([1, 6], device=device)
 
             def add_beta_noise(action):
                 np.random.seed(1)
@@ -142,10 +145,9 @@ def main(argv):
 
             # Add beta noise
             print(f"pre action is: {action}")
-            action = add_beta_noise(action=action)
-            print(f"action is: {action}")
+            # action = add_beta_noise(action=action)
+            print(f"action after adding noise is: {action}")
 
-            print(f"action is: {action}")
             # print(f"action is: {type(action)}")
             # print(f"action is: {to_torch(action.numpy())}")
             # print(f"action is: {type(to_torch(action))}")
@@ -155,15 +157,14 @@ def main(argv):
 
             total_reward += reward
             logs.extend(info["logs"])
-            # if done.any():
-            #     print(info["episode"])
-            #     break
+
             if steps_count == 1000 or done.any():
+                print(info["episode"])
                 break
+
             print(f"steps_count: {steps_count}")
             e = time.time()
-            print(
-                f"step duration: {e - s}")
+            print(f"step duration: {e - s}")
 
     print(f"Total reward: {total_reward}")
     print(f"Time elapsed: {time.time() - start_time}")
