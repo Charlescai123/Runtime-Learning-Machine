@@ -13,7 +13,7 @@ def get_env_config():
 
     # HA-Teacher
     ha_teacher_config = ConfigDict()
-    ha_teacher_config.chi = 0.15
+    ha_teacher_config.chi = 0.25
     ha_teacher_config.tau = 100
     ha_teacher_config.enable = True
     ha_teacher_config.correct = True
@@ -55,7 +55,7 @@ def get_env_config():
     config.foot_friction = 0.7  # 0.7
 
     # Swing controller
-    config.swing_foot_height = 0.12
+    config.swing_foot_height = 0.13
     config.swing_foot_landing_clearance = 0.02
 
     # Termination condition

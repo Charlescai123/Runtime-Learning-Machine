@@ -63,16 +63,10 @@ class RobotPusher:
         self.indicator_max = 50
         random_push_sequence = generate_seed_sequence(seed=1, num_seeds=100)
 
-        # For backwards
-        # push_delta_vel_list_x = [-0.25, -0.25, -0.25, -0.25, -0.25, -0.25, -0.25]
-        # push_delta_vel_list_y = [-0.62, 1.25, -0.7, 0.6, -0.55, 0.6, -0.6]
-        # push_delta_vel_list_z = [-0.72, -0.72, -0.72, -0.72, -0.72, -0.72, -0.72]
-        # push_interval = np.array([300, 450, 620, 750, 820, 950, 1050, 1200]) - 1
-
         # For forward
-        self._push_delta_vel_list_x = to_torch([0.25, 0.25, 0.25, 0.25, 0.3, 0.25, 0.25], device=device)
-        self._push_delta_vel_list_y = to_torch([-0.55, 0.65, -0.6, 0.6, -0.7, 0.7, -0.6], device=device)
-        self._push_delta_vel_list_z = to_torch([-0.762, -0.7, -0.72, -0.72, -0.72, -0.72, -0.72], device=device)
+        self._push_delta_vel_list_x = to_torch([0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], device=device)
+        self._push_delta_vel_list_y = to_torch([-0.5, 0.6, -0.6, 0.6, -0.5, 0.6, -0.6], device=device)
+        self._push_delta_vel_list_z = to_torch([-0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7], device=device)
 
         # Push interval
         self._push_interval = to_torch([200, 380, 620, 750, 850, 1000, 1050, 1200], dtype=torch.int, device=device) - 1

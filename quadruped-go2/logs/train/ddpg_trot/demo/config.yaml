@@ -166,7 +166,7 @@ _fields:
       ha_teacher: !!python/object:ml_collections.config_dict.config_dict.ConfigDict
         _convert_dict: true
         _fields:
-          chi: 0.15
+          chi: 0.25
           correct: true
           cvxpy_solver: solver
           enable: false
@@ -310,7 +310,7 @@ _fields:
       - !!python/tuple
         - com_height
         - 0.01
-      swing_foot_height: 0.12
+      swing_foot_height: 0.13
       swing_foot_landing_clearance: 0.02
       terminal_rewards: []
       terminate_on_body_contact: true

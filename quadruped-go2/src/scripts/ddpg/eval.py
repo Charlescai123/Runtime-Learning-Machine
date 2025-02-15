@@ -2,7 +2,7 @@
 import warnings
 
 """
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=True --enable_ha_teacher=True
+python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True
 """
 
 from absl import app
@@ -76,7 +76,7 @@ def main(argv):
     if FLAGS.enable_ha_teacher:
         config.environment.ha_teacher.enable = True
         config.environment.ha_teacher.chi = 0.15
-        config.environment.ha_teacher.tau = 150
+        config.environment.ha_teacher.tau = 100
 
     env = config.env_class(num_envs=FLAGS.num_envs,
                            device=device,
@@ -112,17 +112,6 @@ def main(argv):
     env.robot._gym.step_graphics(env.robot._sim)
     env.robot._gym.draw_viewer(env.robot._viewer, env.robot._sim, True)
 
-    # env._torque_optimizer._base_position_kp *= 0.5
-    # env._torque_optimizer._base_position_kd *= 0.5
-    # env._torque_optimizer._base_orientation_kp *= 0.5
-    # env._torque_optimizer._base_orientation_kd *= 0.5
-
-    # print(f"env._torque_optimizer._base_position_kp: {env._torque_optimizer._base_position_kp}")
-    # print(f"env._torque_optimizer._base_position_kd: {env._torque_optimizer._base_position_kd}")
-    # print(f"env._torque_optimizer._base_orientation_kp: {env._torque_optimizer._base_orientation_kp}")
-    # print(f"env._torque_optimizer._base_orientation_kd: {env._torque_optimizer._base_orientation_kd}")
-
-    # time.sleep(1)
     start_time = time.time()
     logs = []
     with torch.inference_mode():
@@ -133,6 +122,7 @@ def main(argv):
             print(f"state is: {state}")
 
             action = policy(state)
+
             # action = torch.zeros([1, 6], device=device)
 
             def add_beta_noise(action):
@@ -172,7 +162,7 @@ def main(argv):
         mode = "real" if FLAGS.use_real_robot else "sim"
         output_dir = (
             f"eval_{mode}_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.pkl")
-        # output_path = os.path.join(root_path, output_dir)
+        os.makedirs(FLAGS.traj_dir, exist_ok=True)
         output_path = os.path.join(os.path.dirname(FLAGS.traj_dir), output_dir)
 
         with open(output_path, "wb") as fh:

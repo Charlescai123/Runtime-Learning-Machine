@@ -1,4 +1,4 @@
-name: phyrl-go2-test
+name: phyrl-go2
 channels:
   - pytorch
   - conda-forge
