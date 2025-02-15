@@ -48,6 +48,27 @@ cd extern/rsl_rl && pip install -e .
   cd examples && python 1080_balls_of_solitude.py
   ```
 
+4. Build and install the interface to Unitree's SDK:
+
+* First, install the required packages `Boost` and `LCM`:
+
+   ```bash
+   sudo apt install libboost-all-dev liblcm-dev
+   ```
+
+* Then, go to `extern/go2_sdk` and create a build folder:
+   ```bash
+   cd extern/go2_sdk
+   mkdir build && cd build
+   ```
+
+  Now, build the libraries and move them to the main directory by running:
+   ```bash
+   cmake ..
+   make
+   mv robot_interface* ../../..
+   ```
+
 ## Sim-to-Sim
 
 ---
@@ -67,7 +88,7 @@ IsaacGym for the Go2 robot.
 1. To evalidate trained **Phy-DRL** policy on quadruped Go2 robot, run following command:
 
 ```bash
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=True
+python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True
 ```
 
 This experiment highlights the instability and safety issues of the pretrained policy in the unforeseen environment,
@@ -87,7 +108,7 @@ handling unforeseen incidents arising from unknown environments.
    run command:
 
 ```bash
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=True --enable_ha_teacher=True
+python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True
 ```
 
 <p align="center">
@@ -98,7 +119,7 @@ python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 
 2. To validate the safety performance of **Runtime Learning Machine** under random push, run command:
 
 ```bash  
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=True --enable_ha_teacher=True --enable_pusher=True
+python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True --enable_pusher=True
 ```
 
 <p align="center">
