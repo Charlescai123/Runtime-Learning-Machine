@@ -2,12 +2,11 @@
 import warnings
 
 """
-python -m src.agents.ppo.eval --logdir=logs/train/pronk_cajun --num_envs=1 --use_gpu=False --show_gui=True --use_real_robot=False --save_traj=True
+python -m src.scripts.eval_rlm --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=False --show_gui=True --use_real_robot=False --save_traj=True
 """
 
 from absl import app
 from absl import flags
-# from absl import logging
 from isaacgym import gymapi, gymutil
 from datetime import datetime
 import os
@@ -30,7 +29,7 @@ flags.DEFINE_string("traj_dir", "logs/eval/", "traj_dir.")
 flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
-flags.DEFINE_integer("num_envs", 1024,
+flags.DEFINE_integer("num_envs", 1,
                      "number of environments to evaluate in parallel.")
 flags.DEFINE_bool("save_traj", True, "whether to save trajectory.")
 flags.DEFINE_bool("use_contact_sensor", True, "whether to use contact sensor.")
@@ -56,15 +55,12 @@ def main(argv):
     # print(f"flag: {FLAGS.save_traj}")
     # time.sleep(123)
 
-    import yaml
-    # 加载 YAML 文件
-    yaml_file_path = "src/scripts/ppo/configs/ddpg.yaml"  # 替换为你的 YAML 文件路径
+    yaml_file_path = "src/configs/ddpg.yaml"
 
     with open(yaml_file_path, 'r') as file:
         cfg = yaml.safe_load(file)
     # from types import SimpleNamespace
     # cfg = SimpleNamespace(**cfg_dict)
-    # 现在 cfg 是一个字典，可以像访问字典一样访问配置
     print(cfg)
     # time.sleep(123)
 
@@ -87,11 +83,6 @@ def main(argv):
     with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.load(f, Loader=yaml.Loader)
 
-    with config.unlocked():
-        config.environment.jumping_distance_schedule = [1., 0.3]
-        # config.environment.qp_body_inertia = np.array([0.14, 0.35, 0.35]) * 6
-        config.environment.max_jumps = 6
-
     env = config.env_class(num_envs=FLAGS.num_envs,
                            device=device,
                            config=config.environment,
@@ -103,10 +94,10 @@ def main(argv):
         env.robot.state_estimator.use_external_contact_estimator = (not FLAGS.use_contact_sensor)
 
     # Retrieve policy
-    runner = OnPolicyRunner(env, config.training, policy_path, device=device)
-    runner.load(policy_path)
-    policy = runner.get_inference_policy()
-    runner.alg.actor_critic.train()
+    # runner = OnPolicyRunner(env, config.training, policy_path, device=device)
+    # runner.load(policy_path)
+    # policy = runner.get_inference_policy()
+    # runner.alg.actor_critic.train()
 
     # Reset environment
     state, _ = env.reset()
@@ -128,7 +119,7 @@ def main(argv):
     env._torque_optimizer._base_orientation_kd *= 1
     env._torque_optimizer._base_orientation_kp *= 1
     # env._swing_leg_controller._foot_landing_clearance = 0.1    # current 0
-    env._swing_leg_controller._foot_height = 0.13  # current 0.1
+    env._swing_leg_controller._foot_height = 0.12  # current 0.1
 
     print(f"swing: {env._swing_leg_controller._foot_landing_clearance}")
     print(f"swing: {env._swing_leg_controller._desired_base_height}")
@@ -139,24 +130,7 @@ def main(argv):
     print(f"robot: {env._torque_optimizer._base_orientation_kp}")
     print(f"robot: {env._torque_optimizer._base_orientation_kd}")
 
-    # env.load_plane_asset()
-    # env.add_snow_road()
-    # Add uneven terrains to show the patch strength
-    # add_uneven_terrains(gym=env.robot._gym, sim=env.robot._sim)
-    # load_outdoor_asset(gym=env.robot._gym, sim=env.robot._sim)
-
-    env.robot._init_solo_go2_buffers()
-    # load_customized_asset(gym=env.robot._gym, sim=env.robot._sim, asset_root="meshes/quad_gym/env/assets/", asset_file="stone.urdf")
-    # load_customized_asset(gym=env.robot._gym, sim=env.robot._sim, asset_root="meshes/quad_gym/env/assets/", asset_file="stopsign.urdf")
-    # load_customized_asset(gym=env.robot._gym, sim=env.robot._sim, asset_root="meshes/quad_gym/data/", asset_file="terrain.urdf")
-    # load_customized_asset(gym=env.robot._gym, sim=env.robot._sim, asset_root="meshes/quad_gym/data/tree", asset_file="tree.urdf")
-    # load_customized_asset(gym=env.robot._gym, sim=env.robot._sim, asset_root="meshes/quad_gym/env/assets/", asset_file="terrain9735.obj")
-    # env.robot._gym.prepare_sim(env.robot._sim)
-    # load_plane_asset(gym=env.robot._gym, sim=env.robot._sim, )
-    # from src.utils.sim_utils import add_terrain
-    # add_terrain(env._robot._gym, env._robot._sim)
-
-    time.sleep(1)
+    # time.sleep(1)
     start_time = time.time()
     logs = []
     with torch.inference_mode():
@@ -201,28 +175,12 @@ def main(argv):
             # if done.any():
             #     print(info["episode"])
             #     break
-            if steps_count == 999:
+            if steps_count == 280:
                 break
             print(f"steps_count: {steps_count}")
             e = time.time()
             print(
                 f"***********************************************************************************duration: {e - s}")
-
-    if env.robot.record_video:
-        import cv2
-        frame_width = 1920
-        frame_height = 1080
-        fps = 30
-        output_filename = 'isaacgym_output_video.avi'
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-
-        out = cv2.VideoWriter(output_filename, fourcc, fps, (frame_width, frame_height))
-
-        for frame in env.robot._frames:
-            out.write(frame)
-
-        out.release()
-        cv2.destroyAllWindows()
 
     print(f"Total reward: {total_reward}")
     print(f"Time elapsed: {time.time() - start_time}")

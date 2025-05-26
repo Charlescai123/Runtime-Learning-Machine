@@ -2,11 +2,12 @@
 import warnings
 
 """
-python -m src.scripts.ddpg.eval_rlm --logdir=logs/train/ddpg_trot/demo --num_envs=1 --use_gpu=False --show_gui=True --use_real_robot=False --save_traj=True
+python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True
 """
 
 from absl import app
 from absl import flags
+# from absl import logging
 from isaacgym import gymapi, gymutil
 from datetime import datetime
 import os
@@ -14,7 +15,7 @@ import pickle
 import time
 
 from isaacgym.torch_utils import to_torch  # pylint: disable=unused-import
-from rsl_rl.runners import OnPolicyRunner
+from rsl_rl.runners import OffPolicyRunner
 import numpy as np
 import torch
 import yaml
@@ -27,6 +28,8 @@ torch.set_printoptions(precision=2, sci_mode=False)
 flags.DEFINE_string("logdir", None, "logdir.")
 flags.DEFINE_string("traj_dir", "logs/eval/", "traj_dir.")
 flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
+flags.DEFINE_bool("enable_ha_teacher", False, "whether to enable the HA-Teacher.")
+flags.DEFINE_bool("enable_pusher", False, "whether to enable the robot pusher.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
 flags.DEFINE_integer("num_envs", 1,
@@ -52,22 +55,6 @@ def get_latest_policy_path(logdir):
 
 def main(argv):
     del argv  # unused
-    # print(f"flag: {FLAGS.save_traj}")
-    # time.sleep(123)
-
-    yaml_file_path = "src/configs/ddpg.yaml"
-
-    with open(yaml_file_path, 'r') as file:
-        cfg = yaml.safe_load(file)
-    # from types import SimpleNamespace
-    # cfg = SimpleNamespace(**cfg_dict)
-    print(cfg)
-    # time.sleep(123)
-
-    from src.scripts.ppo.ddpg_agent import DDPGAgent
-    ddpg_agent = DDPGAgent(cfg['agents'])
-
-    device = "cuda" if FLAGS.use_gpu else "cpu"
 
     # Load config and policy
     if FLAGS.logdir.endswith("pt"):
@@ -80,24 +67,35 @@ def main(argv):
         policy_path = get_latest_policy_path(FLAGS.logdir)
         root_path = FLAGS.logdir
 
+    device = "cuda" if FLAGS.use_gpu else "cpu"
+
     with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.load(f, Loader=yaml.Loader)
+
+    # HA-Teacher module
+    if FLAGS.enable_ha_teacher:
+        config.environment.ha_teacher.enable = True
+        config.environment.ha_teacher.chi = 0.15
+        config.environment.ha_teacher.tau = 100
 
     env = config.env_class(num_envs=FLAGS.num_envs,
                            device=device,
                            config=config.environment,
                            show_gui=FLAGS.show_gui,
                            use_real_robot=FLAGS.use_real_robot)
-    # add_uneven_terrains(gym=gym, sim=sim)
+
+    # Robot pusher
+    if FLAGS.enable_pusher:
+        env._pusher.push_enable = True
+
     env = env_wrappers.RangeNormalize(env)
     if FLAGS.use_real_robot:
         env.robot.state_estimator.use_external_contact_estimator = (not FLAGS.use_contact_sensor)
 
     # Retrieve policy
-    # runner = OnPolicyRunner(env, config.training, policy_path, device=device)
-    # runner.load(policy_path)
-    # policy = runner.get_inference_policy()
-    # runner.alg.actor_critic.train()
+    runner = OffPolicyRunner(env, config.training, policy_path, device=device)
+    runner.load(policy_path)
+    policy = runner.get_inference_policy()
 
     # Reset environment
     state, _ = env.reset()
@@ -114,23 +112,6 @@ def main(argv):
     env.robot._gym.step_graphics(env.robot._sim)
     env.robot._gym.draw_viewer(env.robot._viewer, env.robot._sim, True)
 
-    env._torque_optimizer._base_position_kp *= 1
-    env._torque_optimizer._base_position_kd *= 1
-    env._torque_optimizer._base_orientation_kd *= 1
-    env._torque_optimizer._base_orientation_kp *= 1
-    # env._swing_leg_controller._foot_landing_clearance = 0.1    # current 0
-    env._swing_leg_controller._foot_height = 0.12  # current 0.1
-
-    print(f"swing: {env._swing_leg_controller._foot_landing_clearance}")
-    print(f"swing: {env._swing_leg_controller._desired_base_height}")
-    print(f"swing: {env._swing_leg_controller._foot_height}")
-    # time.sleep(123)
-    print(f"robot: {env._torque_optimizer._base_position_kp}")
-    print(f"robot: {env._torque_optimizer._base_position_kd}")
-    print(f"robot: {env._torque_optimizer._base_orientation_kp}")
-    print(f"robot: {env._torque_optimizer._base_orientation_kd}")
-
-    # time.sleep(1)
     start_time = time.time()
     logs = []
     with torch.inference_mode():
@@ -140,7 +121,9 @@ def main(argv):
             # time.sleep(0.02)
             print(f"state is: {state}")
 
-            # action = policy(state)
+            action = policy(state)
+
+            # action = torch.zeros([1, 6], device=device)
 
             def add_beta_noise(action):
                 np.random.seed(1)
@@ -150,19 +133,11 @@ def main(argv):
                 # action = np.clip(action, -1.0, 1.0)
                 return to_torch(action, device=device)
 
-            # time.sleep(123)
-            # print(f"state is: {action2}")
-            # print(f"state is: {type(action2)}")
-
-            # Original A1 Policy
-            action = to_torch(ddpg_agent.actor(state.cpu().numpy()).numpy(), device=device)
-
             # Add beta noise
             print(f"pre action is: {action}")
-            action = add_beta_noise(action=action)
-            print(f"action is: {action}")
+            # action = add_beta_noise(action=action)
+            print(f"action after adding noise is: {action}")
 
-            print(f"action is: {action}")
             # print(f"action is: {type(action)}")
             # print(f"action is: {to_torch(action.numpy())}")
             # print(f"action is: {type(to_torch(action))}")
@@ -172,15 +147,14 @@ def main(argv):
 
             total_reward += reward
             logs.extend(info["logs"])
-            # if done.any():
-            #     print(info["episode"])
-            #     break
-            if steps_count == 280:
+
+            if steps_count == 1000 or done.any():
+                print(info["episode"])
                 break
+
             print(f"steps_count: {steps_count}")
             e = time.time()
-            print(
-                f"***********************************************************************************duration: {e - s}")
+            print(f"step duration: {e - s}")
 
     print(f"Total reward: {total_reward}")
     print(f"Time elapsed: {time.time() - start_time}")
@@ -188,7 +162,7 @@ def main(argv):
         mode = "real" if FLAGS.use_real_robot else "sim"
         output_dir = (
             f"eval_{mode}_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}.pkl")
-        # output_path = os.path.join(root_path, output_dir)
+        os.makedirs(FLAGS.traj_dir, exist_ok=True)
         output_path = os.path.join(os.path.dirname(FLAGS.traj_dir), output_dir)
 
         with open(output_path, "wb") as fh:

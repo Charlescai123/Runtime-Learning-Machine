@@ -32,7 +32,7 @@ conda env create -f environment.yml
 2. Activate conda environment and Install `rsl_rl` lib:
 
 ```bash
-conda activate phyrl-go2
+conda activate rlm-go2
 cd extern/rsl_rl && pip install -e .
 ```
 
@@ -66,19 +66,19 @@ cd extern/rsl_rl && pip install -e .
    ```bash
    cmake ..
    make
-   mv robot_interface* ../../..
+   mv go2_interface* ../../..
    ```
 
 ## Sim-to-Sim
 
 ---
 
-We deploy a *sim-to-sim* policy (Phy-DRL) trained in the PyBullet environment on the A1 robot and transfer it to
-IsaacGym for the Go2 robot.
+A *Sim-to-Sim* policy transfer -- trained in the PyBullet environment on the A1 robot and transferred to
+IsaacGym on the Go2 robot.
 
 <p align="center">
  <img src="./docs/scene.png" height="440" alt="ani_pretrain"/> 
- <br><b>Fig 1. A Sim-to-Sim policy transfer in unforeseen Environment on Quadruped Go2</b>
+ <br><b>Fig 1. Sim-to-Sim in unforeseen Environment on Quadruped Go2</b>
 </p>
 
 - ### Phy-DRL
@@ -88,7 +88,7 @@ IsaacGym for the Go2 robot.
 1. To evalidate trained **Phy-DRL** policy on quadruped Go2 robot, run following command:
 
 ```bash
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True
+python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True
 ```
 
 This experiment highlights the instability and safety issues of the pretrained policy in the unforeseen environment,
@@ -108,7 +108,7 @@ handling unforeseen incidents arising from unknown environments.
    run command:
 
 ```bash
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True
+python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True
 ```
 
 <p align="center">
@@ -119,12 +119,12 @@ python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=Tru
 2. To validate the safety performance of **Runtime Learning Machine** under random push, run command:
 
 ```bash  
-python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True --enable_pusher=True
+python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True --enable_pusher=True
 ```
 
 <p align="center">
  <img src="./docs/rlm_go2_push.gif" height="440" alt="ani_pretrain"/> 
- <br><b>Fig 3. Safety Performance of Runtime Learning Machine under Random Push</b>
+ <br><b>Fig 3. Enhanced Safety Performance by Real-time Patch under Random Push</b>
 </p>
 
 - **Runtime Learning:**
@@ -132,7 +132,7 @@ python -m src.scripts.ddpg.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=Tru
 The **Runtime Learning Machine** facilitates the rapid adaptation of the quadrupedal Go2 robot to unseen environments:
 
 ```bash
-python -m src.scripts.ddpg.train --use_gpu=True --enable_ha_teacher=True
+python -m src.scripts.train --use_gpu=True --enable_ha_teacher=True
 ```
 
 ## Misc
