@@ -121,12 +121,6 @@ class Go2TrotEnv:
         self._gym, self._sim, self._viewer = create_sim(self._sim_conf)
         self._create_terrain()
 
-        # add_ground(self._gym, self._sim)
-        # add_terrain(self._gym, self._sim, "stair")
-        # add_terrain(self._gym, self._sim, "slope")
-        # add_terrain(self._gym, self._sim, "stair", 3.95, True)
-        # add_terrain(self._gym, self._sim, "stair", 0., True)
-
         self._init_positions = self._compute_init_positions()
         if self._use_real_robot:
             robot_class = go2_robot.Go2Robot
@@ -334,8 +328,6 @@ class Go2TrotEnv:
                 self._robot.update_desired_foot_contact(
                     self._gait_generator.desired_contact_state)  # pytype: disable=attribute-error
 
-            # time.sleep(123)
-
             # Get swing leg action
             desired_foot_positions = self._swing_leg_controller.desired_foot_positions
 
@@ -357,10 +349,6 @@ class Go2TrotEnv:
 
             # Use Normal Kp Kd
             # ha_action = self._desired_acc.squeeze()
-
-            print(f"hp_action: {hp_action}")
-            print(f"ha_action: {ha_action}")
-            print(f"self._torque_optimizer.tracking_error: {self._torque_optimizer.tracking_error}")
             terminal_stance_ddq, action_mode = self.coordinator.get_terminal_action(hp_action=hp_action,
                                                                                     ha_action=ha_action,
                                                                                     plant_state=self._torque_optimizer.tracking_error,
@@ -368,17 +356,12 @@ class Go2TrotEnv:
                                                                                     epsilon=self.ha_teacher.epsilon)
 
             terminal_stance_ddq = to_torch(terminal_stance_ddq, device=self._device)
-            print(f"terminal_stance_ddq: {terminal_stance_ddq}")
-            print(f"action_mode: {action_mode}")
 
             # Action mode indices
             hp_indices = torch.argwhere(action_mode == ActionMode.STUDENT.value).squeeze(-1)
             ha_indices = torch.argwhere(action_mode == ActionMode.TEACHER.value).squeeze(-1)
             hp_motor_action = None
             ha_motor_action = None
-
-            # print(f"hp_indices: {hp_indices}")
-            # print(f"ha_indices: {ha_indices}")
 
             # HP-Student in Control
             if len(hp_indices) > 0:
@@ -406,10 +389,6 @@ class Go2TrotEnv:
             motor_action = concatenate_motor_actions(command1=hp_motor_action, indices1=hp_indices,
                                                      command2=ha_motor_action, indices2=ha_indices)
 
-            # print(f"desired_acc: {self._desired_acc}")
-            # print(f"solved_acc: {self._solved_acc}")
-            # print(f"motor_action: {motor_action}")
-            # print(f"self._robot.base_angular_velocity_world_frame: {self._robot.base_angular_velocity_world_frame}")
             logs.append(
                 dict(timestamp=self._robot.time_since_reset,
                      base_position=torch.clone(self._robot.base_position),
@@ -481,37 +460,8 @@ class Go2TrotEnv:
                                                         env_ids=torch.arange(self._num_envs, device=self._device))
 
             self._step_cnt += 1
-
-            # print(f"Time: {self._robot.time_since_reset}")
-            # print(f"Gait: {gait_action}")
-            # print(f"Foot: {foot_action}")
-            # print(f"Phase: {self._obs_buf[:, 3]}")
-            # print(
-            #     f"Desired Velocity: {self._torque_optimizer.desired_linear_velocity}")
-            # print(f"Current Velocity: {self._robot.base_velocity_world_frame}")
-            # print(
-            #     f"Desired RPY: {self._torque_optimizer.desired_base_orientation_rpy}")
-            # print(f"Current RPY: {self._robot.base_orientation_rpy}")
-            # print(
-            #     f"Desired Angular Vel: {self._torque_optimizer.desired_angular_velocity}"
-            # )
-            # print(
-            #     f"Current Angular vel: {self._robot.base_angular_velocity_body_frame}")
-            # print(f"Desired Acc: {self._desired_acc}")
-            # print(f"Solved Acc: {self._solved_acc}")
-            # ans = input("Any Key...")
-            # if ans in ["Y", "y"]:
-            #   import pdb
-            #   pdb.set_trace()
             self._extras["logs"] = logs
 
-            # Resample commands
-            new_cycle_count = (self._gait_generator.true_phase / (2 * torch.pi)).long()
-            finished_cycle = new_cycle_count > self._cycle_count
-            env_ids_to_resample = finished_cycle.nonzero(as_tuple=False).flatten()
-            self._cycle_count = new_cycle_count
-
-            is_terminal = torch.logical_or(finished_cycle, dones)
             # if is_terminal.any():
             #     print(f"terminal_reward is: {self.get_terminal_reward(is_terminal, dones)}")
 
@@ -590,12 +540,6 @@ class Go2TrotEnv:
 
         return sum_reward.squeeze(dim=-1)
 
-    # def _episode_terminated(self):
-    #     timeout = (self._steps_count >= self._episode_length)
-    #     cycles_finished = (self._gait_generator.true_phase /
-    #                        (2 * torch.pi)) > self._config.get('max_jumps', 1)
-    #     return torch.logical_or(timeout, cycles_finished)
-
     def _episode_terminated(self):
         timeout = (self._steps_count >= self._episode_length)
         return timeout
@@ -617,12 +561,6 @@ class Go2TrotEnv:
             limb_contact = torch.logical_or(self._robot.calf_contacts, self._robot.thigh_contacts)
             limb_contact = torch.sum(limb_contact, dim=1)
             is_unsafe = torch.logical_or(is_unsafe, limb_contact > 0)
-
-        # print(self._robot.base_position[:, 2])
-        # input("Any Key...")
-        # if is_unsafe.any():
-        #   import pdb
-        #   pdb.set_trace()
 
         return torch.logical_or(self._episode_terminated(), is_unsafe)
 
@@ -682,34 +620,3 @@ class Go2TrotEnv:
         self._cycle_count = (self._gait_generator.true_phase /
                              (2 * torch.pi)).long()
 
-    def _draw_goals(self, goal, env_ids=0):
-        # Red
-        sphere_geom = gymutil.WireframeSphereGeometry(0.1, 32, 32, None, color=(1, 0, 0))
-
-        # Blue
-        sphere_geom_cur = gymutil.WireframeSphereGeometry(0.1, 32, 32, None, color=(0, 0, 1))
-
-        # Green
-        sphere_geom_reached = gymutil.WireframeSphereGeometry(0.2, 32, 32, None, color=(0, 1, 0))
-        sphere_geom_arrow = gymutil.WireframeSphereGeometry(0.02, 16, 16, None, color=(1, 0.35, 0.25))
-        sphere_geom_arrow2 = gymutil.WireframeSphereGeometry(0.02, 16, 16, None, color=(0, 1, 0.5))
-
-        pose = gymapi.Transform(gymapi.Vec3(goal[0], goal[1], 0), r=None)
-        gymutil.draw_lines(sphere_geom, self._gym, self._viewer, self._robot.env_handles[env_ids], pose)
-        # pose = gymapi.Transform(gymapi.Vec3(goal[0] + 1, goal[1] + 1, 0), r=None)
-        # gymutil.draw_lines(sphere_geom_cur, self._gym, self._viewer, self._robot.env_handles[env_ids], pose)
-        # pose = gymapi.Transform(gymapi.Vec3(goal[0] + 2, goal[1] + 2, 0), r=None)
-        # gymutil.draw_lines(sphere_geom_reached, self._gym, self._viewer, self._robot.env_handles[env_ids], pose)
-        # pose = gymapi.Transform(gymapi.Vec3(goal[0] + 3, goal[1] + 3, 0), r=None)
-        # gymutil.draw_lines(sphere_geom_arrow, self._gym, self._viewer, self._robot.env_handles[env_ids], pose)
-        # pose = gymapi.Transform(gymapi.Vec3(goal[0] + 4, goal[1] + 4, 0), r=None)
-        # gymutil.draw_lines(sphere_geom_arrow2, self._gym, self._viewer, self._robot.env_handles[env_ids], pose)
-
-    def _draw_path(self, pts, env_ids=0):
-        # Red
-        sphere_geom = gymutil.WireframeSphereGeometry(0.02, 32, 32, None, color=(0, 0, 0))
-        print(f"pts: {pts}")
-        print(f"pts: {pts.shape}")
-        for i in range(pts.shape[0]):
-            pose = gymapi.Transform(gymapi.Vec3(pts[i, 0], pts[i, 1], 0), r=None)
-            gymutil.draw_lines(sphere_geom, self._gym, self._viewer, self._robot.env_handles[env_ids], pose)

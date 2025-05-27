@@ -8,7 +8,7 @@ from absl import flags
 
 from datetime import datetime
 import os
-
+import isaacgym
 from ml_collections.config_flags import config_flags
 from rsl_rl.runners import OffPolicyRunner
 
@@ -19,6 +19,7 @@ flags.DEFINE_integer("num_envs", 4, "number of parallel environments.")
 flags.DEFINE_bool("use_gpu", True, "whether to use GPU.")
 flags.DEFINE_bool("enable_ha_teacher", False, "whether to enable the HA-Teacher.")
 flags.DEFINE_bool("enable_pusher", False, "whether to enable the robot pusher.")
+flags.DEFINE_bool("use_real_robot", False, "whether to use real robot.")
 flags.DEFINE_bool("show_gui", True, "whether to show GUI.")
 flags.DEFINE_string("logdir", "logs", "logdir.")
 flags.DEFINE_string("load_checkpoint", None, "checkpoint to load.")

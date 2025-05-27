@@ -134,9 +134,9 @@ def main(argv):
                 return to_torch(action, device=device)
 
             # Add beta noise
-            print(f"pre action is: {action}")
+            # print(f"pre action is: {action}")
             # action = add_beta_noise(action=action)
-            print(f"action after adding noise is: {action}")
+            # print(f"action after adding noise is: {action}")
 
             # print(f"action is: {type(action)}")
             # print(f"action is: {to_torch(action.numpy())}")
@@ -148,7 +148,7 @@ def main(argv):
             total_reward += reward
             logs.extend(info["logs"])
 
-            if steps_count == 1000 or done.any():
+            if steps_count == 1300 or done.any():
                 print(info["episode"])
                 break
 

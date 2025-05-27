@@ -88,7 +88,7 @@ IsaacGym on the Go2 robot.
 1. To evalidate trained **Phy-DRL** policy on quadruped Go2 robot, run following command:
 
 ```bash
-python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True
+python -m src.scripts.eval --logdir=logs/demo --use_gpu=True
 ```
 
 This experiment highlights the instability and safety issues of the pretrained policy in the unforeseen environment,
@@ -108,7 +108,7 @@ handling unforeseen incidents arising from unknown environments.
    run command:
 
 ```bash
-python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True
+python -m src.scripts.eval --logdir=logs/demo --use_gpu=True --enable_ha_teacher=True
 ```
 
 <p align="center">
@@ -119,7 +119,7 @@ python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --e
 2. To validate the safety performance of **Runtime Learning Machine** under random push, run command:
 
 ```bash  
-python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --enable_ha_teacher=True --enable_pusher=True
+python -m src.scripts.eval --logdir=logs/pretrained/demo --use_gpu=True --enable_ha_teacher=True --enable_pusher=True
 ```
 
 <p align="center">
@@ -129,11 +129,8 @@ python -m src.scripts.eval --logdir=logs/train/ddpg_trot/demo --use_gpu=True --e
 
 - **Runtime Learning:**
 
-The **Runtime Learning Machine** facilitates the rapid adaptation of the quadrupedal Go2 robot to unseen environments:
-
-```bash
-python -m src.scripts.train --use_gpu=True --enable_ha_teacher=True
-```
+The **Runtime Learning Machine** facilitates the rapid adaptation of the quadrupedal Go2 robot to unseen environments.
+For further details, please refer to [isaac-wild-go2](https://github.com/Charlescai123/isaac-wild-go2).
 
 ## Misc
 

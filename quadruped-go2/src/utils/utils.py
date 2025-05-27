@@ -65,16 +65,15 @@ class RobotPusher:
 
         # For forward
         self._push_delta_vel_list_x = to_torch([0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25], device=device)
-        self._push_delta_vel_list_y = to_torch([-0.5, 0.6, -0.6, 0.6, -0.5, 0.6, -0.6], device=device)
+        self._push_delta_vel_list_y = to_torch([-0.5, 0.6, -0.6, 0.6, -0.6, 0.5, -0.6], device=device)
         self._push_delta_vel_list_z = to_torch([-0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7], device=device)
 
         # Push interval
-        self._push_interval = to_torch([200, 380, 620, 750, 850, 1000, 1050, 1200], dtype=torch.int, device=device) - 1
+        self._push_interval = to_torch([200, 380, 520, 660, 820, 980, 1100], dtype=torch.int, device=device) - 1
 
     def monitor_push(self, step_cnt, env_ids):
-        if step_cnt > self.begin_push_step and step_cnt == self._push_interval[self.push_cnt]:
-
-            if self.push_enable:
+        if step_cnt > self.begin_push_step and self.push_cnt != len(self._push_interval):
+            if self.push_enable and step_cnt == self._push_interval[self.push_cnt]:
                 print(f"cnt is: {step_cnt}, pushing the robot now")
                 self._push_robot_idx(env_ids)
                 # self._push_robots()
@@ -97,22 +96,22 @@ class RobotPusher:
         delta_y = self._push_delta_vel_list_y[self.push_cnt]
         delta_z = self._push_delta_vel_list_z[self.push_cnt]
 
-        print(f"delta_x: {delta_x}")
-        print(f"delta_y: {delta_y}")
-        print(f"delta_z: {delta_z}")
+        # print(f"delta_x: {delta_x}")
+        # print(f"delta_y: {delta_y}")
+        # print(f"delta_z: {delta_z}")
         # time.sleep(2)
 
         vel_after_push_x = curr_vx + delta_x
         vel_after_push_y = curr_vy + delta_y
         vel_after_push_z = curr_vz + delta_z
 
-        print(f"vel_after_push_x: {vel_after_push_x}")
-        print(f"vel_after_push_y: {vel_after_push_y}")
-        print(f"vel_after_push_z: {vel_after_push_z}")
+        # print(f"vel_after_push_x: {vel_after_push_x}")
+        # print(f"vel_after_push_y: {vel_after_push_y}")
+        # print(f"vel_after_push_z: {vel_after_push_z}")
 
         # Turn on the push indicator for viewing
         self.draw_push_indicator(env_ids=env_ids, target_pos=[delta_x, delta_y, delta_z])
-        print(f"push robot before: {self._robot._root_states}")
+        # print(f"push robot before: {self._robot._root_states}")
 
         actor_root_state = self._gym.acquire_actor_root_state_tensor(self._sim)
         actor_root_state = gymtorch.wrap_tensor(actor_root_state)
