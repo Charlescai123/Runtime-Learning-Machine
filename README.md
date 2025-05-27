@@ -15,7 +15,12 @@ three different physical systems in different environments. Respectively, they'r
 We believe this framework contributes to the advancement of Physical-AI, which enables the development of Embodied
 Artificial Intelligence within Cyber-Physical Systems.
 
-![Image](https://github.com/user-attachments/assets/0b6c1b53-0b05-47a6-aaee-3fe4acbd0501)
+[//]: # (![Image]&#40;https://github.com/user-attachments/assets/0b6c1b53-0b05-47a6-aaee-3fe4acbd0501&#41;)
+
+<p align="center">
+ <img src="https://github.com/user-attachments/assets/0b6c1b53-0b05-47a6-aaee-3fe4acbd0501"/> 
+ <br><b>Fig. Runtime Learning Machine -- Architecture</b>
+</p>
 
 ---
 
