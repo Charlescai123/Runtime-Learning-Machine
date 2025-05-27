@@ -1,12 +1,19 @@
 # Runtime-Learning-Machine
 
+![Embodied AI](https://img.shields.io/badge/Embodied%20AI-robot_intelligent-lightgray?style=flat-square&logo=robotframework)
+![Physical-AI](https://img.shields.io/badge/Physics--AI-physical--model--guided-yellow?style=flat-square&logo=scikitlearn)
+![Cyber-Physical System](https://img.shields.io/badge/Cyber--Physical%20System-CPS-blue?style=flat-square&logo=cloudsmith)
+
+
 This repository contains the experiments of the **Runtime Learning Machine**, where the framework is validated upon
-three different
-physical systems in different environments. Respectively, they're:
+three different physical systems in different environments. Respectively, they're:
 
 * [Cart-Pole](./cartpole/) in Openai Gym
 * [Quadruped-A1](./quadruped-a1/) in Real-world Environment
 * [Quadruped-Go2](./quadruped-go2/) in Nvidia IsaacGym
+
+We believe this framework contributes to the advancement of Physical-AI, which enables the development of Embodied
+Artificial Intelligence within Cyber-Physical Systems.
 
 ![Image](https://github.com/user-attachments/assets/0b6c1b53-0b05-47a6-aaee-3fe4acbd0501)
 
@@ -26,7 +33,7 @@ agent to safely learn (right)</b>
 
 # Quadruped-A1
 
-Runtime Learning Machine on A1 Robot to address unknown unknowns: 
+Runtime Learning Machine on A1 Robot to address unknown unknowns:
 
 https://github.com/user-attachments/assets/0591deaa-65f1-4f43-9c77-0c1c3018929a
 
@@ -41,3 +48,4 @@ architecture to address real-time safety concern from unknown environment.
 </p>
 
 # Citation
+
