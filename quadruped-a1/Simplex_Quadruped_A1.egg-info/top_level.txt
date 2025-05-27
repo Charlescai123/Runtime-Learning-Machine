@@ -1,3 +1,0 @@
-examples
-mpc_osqp
-src

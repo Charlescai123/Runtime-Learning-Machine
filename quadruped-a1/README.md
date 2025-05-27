@@ -8,165 +8,26 @@
 ---
 
 This repo proposes the implementation for the paper **Runtime Learning Machine** to
-provide lifetime safety for real quadruped robot A1 during RL-based deployment and real-world learning.
-(Narration: [video1](https://www.youtube.com/shorts/vJKpNzPLPoE)
-and [video2](https://www.youtube.com/watch?v=ZNpJULgLnh0))
-
-
-[//]: # (## Table of Content)
-
-[//]: # ()
-
-[//]: # (* [Code Structure]&#40;#code-structure&#41;)
-
-[//]: # (* [Environment Setup]&#40;#environment-setup&#41;)
-
-[//]: # (* [PhyDRL Runtime]&#40;#phydrl-runtime&#41;)
-
-[//]: # (* [Running Convex MPC Controller]&#40;#running-convex-mpc-controller&#41;)
-
-[//]: # (    * [In Simulation]&#40;#in-simulation&#41;)
-
-[//]: # (    * [In Real A1 Robot]&#40;#in-real-a1-robot&#41;)
-
-[//]: # (* [Trouble Shootings]&#40;#trouble-shootings&#41;)
-
----
-
-## Code Structure
-
-The configuration settings are under the folder `config`, and the parameters are spawn in
-hierarchy for each instance:
-
-[//]: # (```)
-
-[//]: # (├── config                                            )
-
-[//]: # (├── examples                                )
-
-[//]: # (│      ├── a1_exercise_example.py                     <- Robot makes a sinuous move)
-
-[//]: # (│      ├── a1_sim_to_real_example.py                  <- Robot sim-to-real &#40;for testing&#41;)
-
-[//]: # (│      ├── a1_mpc_controller_example.py               <- Running MPC controller in simulator/real plant)
-
-[//]: # (│      ├── main_drl.py                                <- Training A1 with PhyDRL)
-
-[//]: # (│      └── main_mpc.py                                <- Testing trained PhyDRL policy)
-
-[//]: # (├── locomotion)
-
-[//]: # (│      ├── gait_scheduler                            )
-
-[//]: # (│           ├── gait_scheduler.py                     <- An abstract class)
-
-[//]: # (│           └── offset_gait_scheduler.py              <- Actual gait generator)
-
-[//]: # (│      ├── ha_teacher       )
-
-[//]: # (│           ├── ...)
-
-[//]: # (│           └── ha_teacher.py                         <- HA Teacher   )
-
-[//]: # (│      ├── mpc_controllers                      )
-
-[//]: # (│           ├── mpc_osqp.cc                           <- OSQP library for stance state controller)
-
-[//]: # (│           ├── qp_torque_optimizer.py                <- QP solver for stance acceleration controller)
-
-[//]: # (│           ├── stance_leg_controller_mpc.py          <- Stance controller &#40;objective func -> state&#41;)
-
-[//]: # (│           ├── stance_leg_controller_quadprog.py     <- Stance controller &#40;objective func -> acceleration&#41;)
-
-[//]: # (│           └── swing_leg_controller.py               <- Swing controller &#40;using Raibert formula&#41;)
-
-[//]: # (│      ├── robots)
-
-[//]: # (│           ├── ...)
-
-[//]: # (│           ├── a1.py                                 <- A1 robot &#40;for simulation&#41;)
-
-[//]: # (│           ├── a1_robot.py                           <- A1 robot &#40;for real plant&#41;)
-
-[//]: # (│           ├── a1_robot_phydrl.py                    <- A1 robot &#40;for PhyDRL training&#41;)
-
-[//]: # (│           ├── motors.py                             <- A1 motor model)
-
-[//]: # (│           └── quadruped.py                          <- An abstract base class for all robots)
-
-[//]: # (│      ├── state_estimators)
-
-[//]: # (│           ├── a1_robot_state_estimator.py           <- State estimator for real A1)
-
-[//]: # (│           ├── com_velocity_estimator.py             <- CoM velocity estimator simulator/real plant )
-
-[//]: # (│           └── moving_window_fillter.py              <- A filter used in CoM velocity estimator)
-
-[//]: # (│      ├── wbc_controller.py                          <- robot whole-body controller)
-
-[//]: # (│      └── wbc_controller_cl.py                       <- robot whole-body controller &#40;For continual learning&#41;)
-
-[//]: # (├── ...)
-
-[//]: # (├── logs                                              <- Log files for training)
-
-[//]: # (├── models                                            <- Trained model saved path)
-
-[//]: # (├── third_party                                       <- Code by third parties &#40;unitree, qpsolver, etc.&#41;)
-
-[//]: # (├── requirements.txt                                  <- Depencencies for code environment)
-
-[//]: # (├── setup.py)
-
-[//]: # (└── utils.py                         )
-
-[//]: # (```)
-
-[//]: # (## Running Convex MPC Controller:)
-
-[//]: # ()
-
-[//]: # (### Setup the environment)
-
-[//]: # ()
-
-[//]: # (First, make sure the environment is setup by following the steps in the [Setup]&#40;#Setup&#41; section.)
-
-[//]: # ()
-
-[//]: # (### Run the code:)
-
-[//]: # ()
-
-[//]: # (```bash)
-
-[//]: # (python -m src.convex_mpc_controller.convex_mpc_controller_example --show_gui=True --max_time_secs=10 --world=plane)
-
-[//]: # (```)
-
-[//]: # ()
-
-[//]: # (change `world` argument to be one of `[plane, slope, stair, uneven]` for different worlds. The current MPC controller)
-
-[//]: # (has been tuned for all four worlds.)
+provide lifetime safety for real robot during RL-based policy deployment and real-world learning.
 
 ## Environment Setup
+
+---
 
 ### Setup for Local PC
 
 It is recommended to create a separate virtualenv or conda environment to avoid conflicting with existing system
-packages. The required packages have been tested under Python 3.8, though they should be compatible with other Python
-versions.
+packages.
 
 Follow the steps below to build the Python environment:
 
-1. First, install all dependent packages by running:
+1. First, create the conda environment by running:
 
    ```bash
-   pip install -r requirements.txt
+   conda create --name rlm-a1 python==3.10.0 
    ```
 
-2. Second, install the C++ binding for the convex MPC controller:
+2. Second, Install all dependent packages by running:
 
    ```bash
    python setup.py install
@@ -222,7 +83,66 @@ Follow the steps if you want to run controllers on the real robot:
    Configure the wireless on the real robot with the [manual](docs/A1_Wireless_Configuration.pdf), and make sure
    you can ping into the robot's low-level controller (IP:`192.168.123.10`) on your local PC.
 
-### Runtime
+[//]: # (3. **Test connection**)
 
-To test it in simulation, run `bash scripts/locomotion_test.sh`. To test it in hardware, make sure the parameters are
-well set and run `bash scripts/a1_test.sh`.
+[//]: # ()
+
+[//]: # (   Start up the robot. After the robot stands up, enter joint-damping mode by pressing L2+B on the remote controller.)
+
+[//]: # (   Then, run the following:)
+
+[//]: # (   ```bash)
+
+[//]: # (   python -m src.robots.a1_robot_exercise_example --use_real_robot=True)
+
+[//]: # (   ```)
+
+[//]: # ()
+
+[//]: # (   The robot should be moving its body up and down following a pre-set trajectory. Terminate the script at any time to)
+
+[//]: # (   bring the robot back to joint-damping position.)
+
+## Runtime
+
+---
+
+#### Run script for real-world experiment
+
+```Shell
+python job/run_edge_control_real.py
+```
+
+#### Run script for simulation experiment
+
+```Shell
+python job/run_edge_control.py
+```
+
+#### Run script for cloud training for simulation or real-world experiment
+
+```Shell
+python job/run_cloud_train.py
+```
+
+#### Run script for patch update
+
+```Shell
+python job/run_patch_update.py
+```
+
+## Cautions
+
+---
+
+Please exercise caution when running this code on a real robot, as the A1 motor is prone to damage and the framework’s
+real-time performance is highly dependent on the computing platform. We previously encountered hardware issues during
+testing. To minimize risk, we strongly recommend thoroughly validating both the code and the hardware setup (e.g., the
+host machine’s CPU and GPU) before deployment.
+
+## Trouble-shootings
+
+---
+
+In case your onboard motor damaged due to unknown problems, refer to
+the [instruction manual](docs/A1_Motor_Replacement.pdf) for its replacement

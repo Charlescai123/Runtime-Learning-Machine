@@ -9,10 +9,10 @@ constant:
     
 # 12 Robot Motors
 motor_group:
-  _target_: src.envs.robot.unitree_a1.motors.MotorGroup
+  _target_: envs.robot.unitree_a1.motors.MotorGroup
   gen_by_yaml: true
   motors:
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "FR_hip_joint"
       motor_control_mode: *position_control
       init_position: 0.0
@@ -24,7 +24,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 1
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "FR_thigh_joint"
       motor_control_mode: *position_control
       init_position: 0.9
@@ -36,7 +36,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "FR_calf_joint"
       motor_control_mode: *position_control
       init_position: -1.8
@@ -48,7 +48,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "FL_hip_joint"
       motor_control_mode: *position_control
       init_position: 0.0
@@ -60,7 +60,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 1
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "FL_thigh_joint"
       motor_control_mode: *position_control
       init_position: 0.9
@@ -72,7 +72,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "FL_calf_joint"
       motor_control_mode: *position_control
       init_position: -1.8
@@ -84,7 +84,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "RR_hip_joint"
       motor_control_mode: *position_control
       init_position: 0.0
@@ -96,7 +96,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 1
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "RR_thigh_joint"
       motor_control_mode: *position_control
       init_position: 0.9
@@ -108,7 +108,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "RR_calf_joint"
       motor_control_mode: *position_control
       init_position: -1.8
@@ -120,7 +120,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "RL_hip_joint"
       motor_control_mode: *position_control
       init_position: 0.0
@@ -132,7 +132,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 1
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "RL_thigh_joint"
       motor_control_mode: *position_control
       init_position: 0.9
@@ -144,7 +144,7 @@ motor_group:
       max_torque: 33.5
       kp: 100
       kd: 2
-    - _target_: src.envs.robot.unitree_a1.motors.MotorModel
+    - _target_: envs.robot.unitree_a1.motors.MotorModel
       name: "RL_calf_joint"
       motor_control_mode: *position_control
       init_position: -1.8

@@ -1,8 +1,8 @@
 # @package envs.simulator
 # Pybullet settings
 
-envs_path: 'simulator/sim_envs_v2'
-robot_urdf_path: 'src/envs/simulator/sim_envs_v2/urdf/a1.urdf'
+envs_path: 'envs/simulator/sim_envs_v2'
+robot_urdf_path: 'envs/simulator/sim_envs_v2/urdf/a1.urdf'
 fixed_time_step: 0.001
 num_solver_iterations: 30
 enable_cone_friction: 0
@@ -10,7 +10,7 @@ show_gui: true  # Show GUI
 
 video:
   record: false     # Record a video or not
-  save_path: '/home/mao/Desktop/simulation.mp4'
+  save_path: '/home/hongi/Desktop/simulation.mp4'
 
 camera:
   is_on: false

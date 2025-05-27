@@ -7,7 +7,7 @@ three different
 physical systems in different environments. Respectively, they're:
 
 * [Cart-Pole](./cartpole/README.md) in Openai Gym
-* [Quadruped-A1](./quadruped-a1/README.md) in Real-world environment
+* [Quadruped-A1](./quadruped-a1/README.md) in Real-world Environment
 * [Quadruped-Go2](./quadruped-go2/) in Nvidia IsaacGym
 
 ---
@@ -46,3 +46,5 @@ architecture to address real-time safety concern from unknown environment.
 </p>
 
 # Citation
+
+---
