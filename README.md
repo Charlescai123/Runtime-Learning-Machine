@@ -22,8 +22,6 @@ Artificial Intelligence within Cyber-Physical Systems.
  <br><b>Fig. Runtime Learning Machine -- Architecture</b>
 </p>
 
----
-
 # Cart-Pole
 
 Data-driven methods are prone to the unknown unknowns in the environment which brings safety challenges for the
