@@ -39,5 +39,3 @@ architecture to address real-time safety concern from unknown environment.
 </p>
 
 # Citation
-
----

@@ -71,8 +71,6 @@ cd extern/rsl_rl && pip install -e .
 
 ## Sim-to-Sim
 
----
-
 A *Sim-to-Sim* policy transfer -- trained in the PyBullet environment on the A1 robot and transferred to
 IsaacGym on the Go2 robot.
 
@@ -82,8 +80,6 @@ IsaacGym on the Go2 robot.
 </p>
 
 - ### Phy-DRL
-
----
 
 1. To evalidate trained **Phy-DRL** policy on quadruped Go2 robot, run following command:
 
@@ -96,8 +92,6 @@ even
 with the employment of domain randomization.
 
 - ### Runtime Learning Machine
-
----
 
 The **Runtime Learning Machine** is designed to ensure real-time responsiveness in safety-critical systems, effectively
 handling unforeseen incidents arising from unknown environments.
@@ -133,7 +127,5 @@ The **Runtime Learning Machine** facilitates the rapid adaptation of the quadrup
 For further details, please refer to [isaac-wild-go2](https://github.com/Charlescai123/isaac-wild-go2).
 
 ## Misc
-
----
 
 - In order to plot the latest saved trajectory, run command `python -m src.utils.plot_trajectory`
