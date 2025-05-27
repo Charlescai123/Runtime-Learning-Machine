@@ -4,8 +4,8 @@ This repository contains the experiments of the **Runtime Learning Machine**, wh
 three different
 physical systems in different environments. Respectively, they're:
 
-* [Cart-Pole](./cartpole/README.md) in Openai Gym
-* [Quadruped-A1](./quadruped-a1/README.md) in Real-world Environment
+* [Cart-Pole](./cartpole/) in Openai Gym
+* [Quadruped-A1](./quadruped-a1/) in Real-world Environment
 * [Quadruped-Go2](./quadruped-go2/) in Nvidia IsaacGym
 
 ![Image](https://github.com/user-attachments/assets/0b6c1b53-0b05-47a6-aaee-3fe4acbd0501)
