@@ -81,6 +81,8 @@ IsaacGym on the Go2 robot.
 
 - ### Phy-DRL
 
+---
+
 1. To evalidate trained **Phy-DRL** policy on quadruped Go2 robot, run following command:
 
 ```bash
@@ -92,6 +94,8 @@ even
 with the employment of domain randomization.
 
 - ### Runtime Learning Machine
+
+---
 
 The **Runtime Learning Machine** is designed to ensure real-time responsiveness in safety-critical systems, effectively
 handling unforeseen incidents arising from unknown environments.
