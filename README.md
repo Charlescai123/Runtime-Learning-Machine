@@ -41,7 +41,7 @@ A Sim-to-Sim policy transfer from Pybullet A1 robot to IsaacGym Go2 robot. With 
 architecture to address real-time safety concern from unknown environment.
 
 <p align="center">
- <img src="./quadruped-go2/docs/rlm_go2_push.gif" height="440" alt="ani_pretrain"/> 
+ <img src="./quadruped-go2/docs/rlm_go2_push.gif" height="450" alt="ani_pretrain"/> 
  <br><b>Fig. Safety Performance of Runtime Learning Machine under Random Push</b>
 </p>
 
