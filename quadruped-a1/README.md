@@ -5,8 +5,6 @@
 ![Linux](https://img.shields.io/badge/Linux-22.04-yellow?logo=linux)
 ![Pybullet](https://img.shields.io/badge/Pybullet-3.2.6-brightgreen)
 
----
-
 This repo proposes the implementation for the paper **Runtime Learning Machine** to
 provide lifetime safety for real robot during RL-based policy deployment and real-world learning.
 
