@@ -29,6 +29,8 @@ agent to safely learn (right)</b>
 # Quadruped-A1
 
 ---
+Runtime Learning Machine on A1 Robot to address unknown unknowns: 
+https://github.com/user-attachments/assets/0591deaa-65f1-4f43-9c77-0c1c3018929a
 
 # Quadruped-Go2
 
