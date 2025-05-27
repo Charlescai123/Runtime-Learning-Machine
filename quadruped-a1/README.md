@@ -12,8 +12,6 @@ provide lifetime safety for real robot during RL-based policy deployment and rea
 
 ## Environment Setup
 
----
-
 ### Setup for Local PC
 
 It is recommended to create a separate virtualenv or conda environment to avoid conflicting with existing system
@@ -83,29 +81,8 @@ Follow the steps if you want to run controllers on the real robot:
    Configure the wireless on the real robot with the [manual](docs/A1_Wireless_Configuration.pdf), and make sure
    you can ping into the robot's low-level controller (IP:`192.168.123.10`) on your local PC.
 
-[//]: # (3. **Test connection**)
-
-[//]: # ()
-
-[//]: # (   Start up the robot. After the robot stands up, enter joint-damping mode by pressing L2+B on the remote controller.)
-
-[//]: # (   Then, run the following:)
-
-[//]: # (   ```bash)
-
-[//]: # (   python -m src.robots.a1_robot_exercise_example --use_real_robot=True)
-
-[//]: # (   ```)
-
-[//]: # ()
-
-[//]: # (   The robot should be moving its body up and down following a pre-set trajectory. Terminate the script at any time to)
-
-[//]: # (   bring the robot back to joint-damping position.)
 
 ## Runtime
-
----
 
 #### Run script for real-world experiment
 
@@ -133,16 +110,12 @@ python job/run_patch_update.py
 
 ## Cautions
 
----
-
 Please exercise caution when running this code on a real robot, as the A1 motor is prone to damage and the framework’s
 real-time performance is highly dependent on the computing platform. We previously encountered hardware issues during
 testing. To minimize risk, we strongly recommend thoroughly validating both the code and the hardware setup (e.g., the
 host machine’s CPU and GPU) before deployment.
 
 ## Trouble-shootings
-
----
 
 In case your onboard motor damaged due to unknown problems, refer to
 the [instruction manual](docs/A1_Motor_Replacement.pdf) for its replacement

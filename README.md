@@ -1,7 +1,5 @@
 # Runtime-Learning-Machine
 
----
-
 This repository contains the experiments of the **Runtime Learning Machine**, where the framework is validated upon
 three different
 physical systems in different environments. Respectively, they're:
@@ -13,8 +11,6 @@ physical systems in different environments. Respectively, they're:
 ---
 
 # Cart-Pole
-
----
 
 Data-driven methods are prone to the unknown unknowns in the environment which brings safety challenges for the
 safety-critical systems. Runtime Learning Machine is designed to address related concerns:
@@ -28,14 +24,11 @@ agent to safely learn (right)</b>
 
 # Quadruped-A1
 
----
 Runtime Learning Machine on A1 Robot to address unknown unknowns: 
 
 https://github.com/user-attachments/assets/0591deaa-65f1-4f43-9c77-0c1c3018929a
 
 # Quadruped-Go2
-
----
 
 A Sim-to-Sim policy transfer from Pybullet A1 robot to IsaacGym Go2 robot. With **Runtime Learning Machine**
 architecture to address real-time safety concern from unknown environment.
