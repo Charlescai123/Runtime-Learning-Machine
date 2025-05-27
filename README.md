@@ -47,5 +47,5 @@ architecture to address real-time safety concern from unknown environment.
  <br><b>Fig. Safety Performance of Runtime Learning Machine under Random Push</b>
 </p>
 
-# Citation
+[//]: # (# Citation)
 
