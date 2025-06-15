@@ -50,5 +50,20 @@ architecture to address real-time safety concern from unknown environment.
  <br><b>Fig. Safety Performance of Runtime Learning Machine under Random Push</b>
 </p>
 
-[//]: # (# Citation)
+# Citation
+Please star or cite below papers if you find this repo helpful 🙏
 
+```chatinput
+@article{10.1145/3744351,
+author = {Cai, Yihao and Mao, Yanbing and Sha, Lui and Cao, Hongpeng and Caccamo, Marco},
+title = {Runtime Learning Machine},
+year = {2025},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+issn = {2378-962X},
+url = {https://doi.org/10.1145/3744351},
+doi = {10.1145/3744351},
+journal = {ACM Trans. Cyber-Phys. Syst.},
+keywords = {Runtime Learning, Safety, Phy-DRL, Real-time Patch, Unknown Unknowns, Sim2Real Gap}
+}
+```
